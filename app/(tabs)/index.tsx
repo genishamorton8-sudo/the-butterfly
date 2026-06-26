@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
 
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => router.push('/(tabs)/upload-selfie' as any)}
+          onPress={() => router.push('/signup' as any)}
         >
           <Text style={styles.primaryButtonText}>
             Create an Account

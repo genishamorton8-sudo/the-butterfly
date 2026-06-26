@@ -1,25 +1,25 @@
 import { router } from 'expo-router';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
-  Alert,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+    Alert,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { auth } from '../lib/firebase';
 
-export default function LoginScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  async function signIn() {
+  async function signUp() {
     Keyboard.dismiss();
 
     if (!email.trim() || !password) {
@@ -27,14 +27,29 @@ export default function LoginScreen() {
       return;
     }
 
-    try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
-      router.replace('/(tabs)/dashboard' as any);
-    } catch {
+    if (password.length < 6) {
       Alert.alert(
-        'Sign in failed',
-        'Please check your email and password and try again.'
+        'Password too short',
+        'Your password must be at least 6 characters.'
       );
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+      Alert.alert(
+        'Success!',
+        'Your account has been created.'
+      );
+
+      router.replace('/(tabs)/upload-selfie' as any);
+    } catch (error: any) {
+      Alert.alert('Unable to create account', error.message);
     }
   }
 
@@ -51,10 +66,10 @@ export default function LoginScreen() {
         >
           <Text style={styles.butterfly}>🦋</Text>
 
-          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.title}>Create Your Account</Text>
 
           <Text style={styles.subtitle}>
-            Your healing journey is still here.
+            Your healing journey begins today.
           </Text>
 
           <TextInput
@@ -76,15 +91,22 @@ export default function LoginScreen() {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={styles.button} onPress={signIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={signUp}
+          >
+            <Text style={styles.buttonText}>
+              Create Account
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.outlineButton}
             onPress={() => router.replace('/' as any)}
           >
-            <Text style={styles.outlineButtonText}>Back to Welcome</Text>
+            <Text style={styles.outlineButtonText}>
+              Back
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </TouchableWithoutFeedback>
