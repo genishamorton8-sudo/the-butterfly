@@ -1,6 +1,13 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { auth } from '../../lib/firebase';
 
 export default function DashboardScreen() {
@@ -17,7 +24,7 @@ export default function DashboardScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.butterfly}>🦋</Text>
 
-      <Text style={styles.title}>The Butterfly</Text>
+      <Text style={styles.title}>Welcome back, friend</Text>
       <Text style={styles.subtitle}>Your healing home base.</Text>
 
       <View style={styles.heroCard}>
@@ -35,12 +42,41 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.grid}>
-        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
-        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
-        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
-        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
-        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
-        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
+        <HomeButton
+          title="Today’s Word"
+          emoji="📖"
+          onPress={() => router.push('/(tabs)/today-word' as any)}
+        />
+
+        <HomeButton
+          title="Mood Check"
+          emoji="😊"
+          onPress={() => router.push('/(tabs)/mood' as any)}
+        />
+
+        <HomeButton
+          title="Journal"
+          emoji="📝"
+          onPress={() => router.push('/(tabs)/journal' as any)}
+        />
+
+        <HomeButton
+          title="Prayer"
+          emoji="🙏"
+          onPress={() => router.push('/prayer' as any)}
+        />
+
+        <HomeButton
+          title="Celebrate"
+          emoji="🎉"
+          onPress={() => router.push('/(tabs)/celebrate' as any)}
+        />
+
+        <HomeButton
+          title="Garden"
+          emoji="🌸"
+          onPress={() => router.push('/(tabs)/garden' as any)}
+        />
       </View>
 
       <View style={styles.progressCard}>
@@ -92,7 +128,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#4B1D7A',
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '900',
     textAlign: 'center',
   },
