@@ -1,136 +1,77 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getProgress } from '../../.claude/lib/progress';
-
-const MOOD_STORAGE_KEY = '@butterfly_today_mood';
+import { router } from 'expo-router';
+import { signOut } from 'firebase/auth';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { auth } from '../../lib/firebase';
 
 export default function DashboardScreen() {
-  const [progress, setProgress] = useState(20);
-  const [todayMood, setTodayMood] = useState('');
-
-  useFocusEffect(
-    useCallback(() => {
-      loadDashboard();
-    }, [])
-  );
-
-  async function loadDashboard() {
-    const savedProgress = await getProgress();
-    const savedMood = await AsyncStorage.getItem(MOOD_STORAGE_KEY);
-
-    setProgress(savedProgress);
-    setTodayMood(savedMood ?? '');
-  }
-
-  function getGreeting() {
-    const hour = new Date().getHours();
-
-    if (hour < 12) return '☀️ Good Morning, Genisha';
-    if (hour < 18) return '🌤️ Good Afternoon, Genisha';
-    return '🌙 Good Evening, Genisha';
-  }
-
-  function getStageName() {
-    if (progress >= 100) return '🦋 Butterfly';
-    if (progress >= 75) return '✨ Emerging Butterfly';
-    if (progress >= 50) return '🪺 Cocoon';
-    if (progress >= 25) return '🐛 Caterpillar';
-    return '🥚 Egg';
+  async function handleSignOut() {
+    try {
+      await signOut(auth);
+      router.replace('/login' as any);
+    } catch {
+      Alert.alert('Sign out failed', 'Please try again.');
+    }
   }
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.greeting}>{getGreeting()}</Text>
-
       <Text style={styles.butterfly}>🦋</Text>
 
-      <Text style={styles.title}>Let's continue your healing journey.</Text>
+      <Text style={styles.title}>The Butterfly</Text>
+      <Text style={styles.subtitle}>Your healing home base.</Text>
 
-      <Text style={styles.tagline}>Pain lied. Purpose didn’t.</Text>
+      <View style={styles.heroCard}>
+        <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
+        <Text style={styles.heroText}>
+          Start here. One step at a time. No pressure. Just progress.
+        </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.stage}>{getStageName()}</Text>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => router.push('/(tabs)/daily-journey' as any)}
+        >
+          <Text style={styles.primaryButtonText}>Begin Today’s Journey</Text>
+        </TouchableOpacity>
+      </View>
 
-        <Text style={styles.progressText}>Progress: {progress}%</Text>
+      <View style={styles.grid}>
+        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
+        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
+        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
+        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
+        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
+        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
+      </View>
 
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${progress}%` }]} />
-        </View>
-
-        <Text style={styles.message}>
-          Every step is proof that purpose is still speaking.
+      <View style={styles.progressCard}>
+        <Text style={styles.sectionTitle}>Butterfly Progress</Text>
+        <Text style={styles.progressStage}>🥚 Beginning Stage</Text>
+        <Text style={styles.progressText}>
+          Your transformation has started. Keep showing up.
         </Text>
       </View>
 
-      <View style={styles.moodCard}>
-        <Text style={styles.moodTitle}>Today's Mood</Text>
-        <Text style={styles.moodText}>
-          {todayMood || 'Not checked in yet'}
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.scriptureCard}
-        onPress={() => router.push('/(tabs)/today-word' as any)}
-      >
-        <Text style={styles.scriptureTitle}>📖 Today's Scripture</Text>
-        <Text style={styles.scriptureText}>
-          "For I know the thoughts that I think toward you..."
-        </Text>
-        <Text style={styles.tapHint}>Tap to continue →</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/daily-journey' as any)}
-      >
-        <Text style={styles.buttonText}>🌱 Continue Today's Journey</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/mood' as any)}
-      >
-        <Text style={styles.buttonText}>😊 Mood Check</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/journal' as any)}
-      >
-        <Text style={styles.buttonText}>📝 Journal</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/prayer' as any)}
-      >
-        <Text style={styles.buttonText}>🙏 Prayer</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/celebrate' as any)}
-      >
-        <Text style={styles.buttonText}>🎉 Celebrate</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/(tabs)/garden' as any)}
-      >
-        <Text style={styles.buttonText}>🌸 Butterfly Garden</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.outlineButton}
-        onPress={() => router.replace('/' as any)}
-      >
-        <Text style={styles.outlineButtonText}>← Start Over</Text>
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutButtonText}>Sign Out</Text>
       </TouchableOpacity>
     </ScrollView>
+  );
+}
+
+function HomeButton({
+  title,
+  emoji,
+  onPress,
+}: {
+  title: string;
+  emoji: string;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity style={styles.homeButton} onPress={onPress}>
+      <Text style={styles.homeEmoji}>{emoji}</Text>
+      <Text style={styles.homeButtonText}>{title}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -140,152 +81,131 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF9F3',
   },
   content: {
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 80,
+    paddingHorizontal: 22,
+    paddingTop: 55,
+    paddingBottom: 90,
     alignItems: 'center',
-  },
-  greeting: {
-    fontSize: 22,
-    color: '#4B1D7A',
-    fontWeight: '800',
-    marginBottom: 10,
-    textAlign: 'center',
   },
   butterfly: {
-    fontSize: 44,
+    fontSize: 56,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24,
     color: '#4B1D7A',
-    fontWeight: '800',
+    fontSize: 36,
+    fontWeight: '900',
     textAlign: 'center',
-    marginTop: 8,
   },
-  tagline: {
-    color: '#D4AF37',
+  subtitle: {
+    color: '#E75480',
     fontSize: 18,
     fontWeight: '700',
-    marginTop: 5,
-    marginBottom: 15,
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 22,
   },
-  card: {
+  heroCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
-    borderRadius: 22,
-    padding: 15,
+    borderRadius: 28,
+    padding: 22,
     borderWidth: 2,
     borderColor: '#F1D7A7',
-    marginBottom: 10,
+    marginBottom: 22,
   },
-  stage: {
-    fontSize: 20,
+  heroTitle: {
     color: '#4B1D7A',
-    fontWeight: '800',
+    fontSize: 25,
+    fontWeight: '900',
     textAlign: 'center',
   },
-  progressText: {
-    color: '#E75480',
-    fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginTop: 6,
-    marginBottom: 8,
-  },
-  progressBar: {
-    width: '100%',
-    height: 14,
-    backgroundColor: '#F4E7F8',
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#E75480',
-    borderRadius: 20,
-  },
-  message: {
+  heroText: {
     color: '#3F2A4D',
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  moodCard: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    borderRadius: 22,
-    padding: 14,
-    borderWidth: 2,
-    borderColor: '#F1D7A7',
-    marginBottom: 10,
-  },
-  moodTitle: {
-    color: '#4B1D7A',
-    fontSize: 18,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  moodText: {
-    color: '#E75480',
-    fontSize: 18,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  scriptureCard: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    borderRadius: 22,
-    padding: 14,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-    marginBottom: 10,
-  },
-  scriptureTitle: {
-    color: '#4B1D7A',
-    fontSize: 19,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  scriptureText: {
-    color: '#4B1D7A',
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 8,
-    fontStyle: 'italic',
-  },
-  tapHint: {
-    color: '#E75480',
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'center',
     marginTop: 10,
-    fontWeight: '700',
+    marginBottom: 18,
   },
-  button: {
+  primaryButton: {
     backgroundColor: '#E75480',
-    width: '100%',
-    paddingVertical: 11,
-    borderRadius: 30,
+    paddingVertical: 16,
+    borderRadius: 28,
     alignItems: 'center',
-    marginBottom: 7,
   },
-  buttonText: {
+  primaryButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '900',
   },
-  outlineButton: {
+  grid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  homeButton: {
+    backgroundColor: '#FFFFFF',
+    width: '48%',
+    borderRadius: 22,
+    paddingVertical: 18,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#F1D7A7',
+    marginBottom: 12,
+  },
+  homeEmoji: {
+    fontSize: 30,
+    marginBottom: 8,
+  },
+  homeButtonText: {
+    color: '#4B1D7A',
+    fontSize: 15,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  progressCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    color: '#4B1D7A',
+    fontSize: 22,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  progressStage: {
+    color: '#E75480',
+    fontSize: 18,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  progressText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  signOutButton: {
     borderColor: '#4B1D7A',
     borderWidth: 2,
     width: '100%',
-    paddingVertical: 13,
+    paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
-    marginTop: 10,
   },
-  outlineButtonText: {
+  signOutButtonText: {
     color: '#4B1D7A',
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '900',
   },
 });

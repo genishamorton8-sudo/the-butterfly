@@ -3,7 +3,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
   Alert,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,7 +10,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import { auth } from '../lib/firebase';
 
@@ -19,146 +17,123 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  async function signIn() {
-    Keyboard.dismiss();
-
+  async function handleSignIn() {
     if (!email.trim() || !password) {
-      Alert.alert('Almost there', 'Please enter your email and password.');
+      Alert.alert('Missing Information', 'Please enter your email and password.');
       return;
     }
 
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      router.replace('/(tabs)/dashboard' as any);
-    } catch {
-      Alert.alert(
-        'Sign in failed',
-        'Please check your email and password and try again.'
-      );
+      router.replace('/(tabs)/dashboard');
+    } catch (error: any) {
+      Alert.alert('Sign In Failed', error.message);
     }
   }
 
   return (
     <KeyboardAvoidingView
-      style={styles.wrapper}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          style={styles.screen}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.logo}>🦋</Text>
+
+        <Text style={styles.title}>Welcome Back</Text>
+
+        <Text style={styles.subtitle}>
+          Sign in to continue your healing journey.
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignIn}
         >
-          <Text style={styles.butterfly}>🦋</Text>
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
 
-          <Text style={styles.title}>Welcome Back</Text>
-
-          <Text style={styles.subtitle}>
-            Your healing journey is still here.
+        <TouchableOpacity
+          onPress={() => router.replace('/')}
+        >
+          <Text style={styles.back}>
+            Back to Welcome
           </Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#9B8AA8"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor="#9B8AA8"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          <TouchableOpacity style={styles.button} onPress={signIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.outlineButton}
-            onPress={() => router.replace('/' as any)}
-          >
-            <Text style={styles.outlineButtonText}>Back to Welcome</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
-  },
-  screen: {
+  container: {
     flex: 1,
     backgroundColor: '#FFF9F3',
   },
   content: {
-    paddingHorizontal: 26,
-    paddingTop: 90,
-    paddingBottom: 80,
-    alignItems: 'center',
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 24,
   },
-  butterfly: {
-    fontSize: 64,
-    marginBottom: 18,
+  logo: {
+    fontSize: 60,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   title: {
-    color: '#4B1D7A',
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '800',
+    color: '#4B1D7A',
     textAlign: 'center',
   },
   subtitle: {
-    color: '#E75480',
-    fontSize: 19,
-    fontWeight: '700',
     textAlign: 'center',
-    marginTop: 10,
+    color: '#E75480',
     marginBottom: 30,
+    fontSize: 18,
   },
   input: {
     backgroundColor: '#F4E7F8',
-    width: '100%',
-    borderRadius: 18,
+    borderRadius: 14,
     padding: 16,
     fontSize: 17,
-    color: '#3F2A4D',
     marginBottom: 16,
   },
   button: {
     backgroundColor: '#E75480',
-    width: '100%',
-    paddingVertical: 18,
+    padding: 18,
     borderRadius: 30,
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 14,
+    marginTop: 10,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#FFF',
+    fontWeight: '800',
     fontSize: 18,
-    fontWeight: '800',
   },
-  outlineButton: {
-    borderColor: '#4B1D7A',
-    borderWidth: 2,
-    width: '100%',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  outlineButtonText: {
+  back: {
+    marginTop: 25,
+    textAlign: 'center',
     color: '#4B1D7A',
-    fontSize: 17,
-    fontWeight: '800',
+    fontWeight: '700',
   },
 });

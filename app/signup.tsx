@@ -14,16 +14,18 @@ import {
     TouchableWithoutFeedback,
 } from 'react-native';
 import { auth } from '../lib/firebase';
+import { createUserProfile } from '../lib/userProfile';
 
 export default function SignupScreen() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   async function signUp() {
     Keyboard.dismiss();
 
-    if (!email.trim() || !password) {
-      Alert.alert('Almost there', 'Please enter your email and password.');
+    if (!name.trim() || !email.trim() || !password) {
+      Alert.alert('Almost there', 'Please enter your name, email, and password.');
       return;
     }
 
@@ -36,20 +38,26 @@ export default function SignupScreen() {
     }
 
     try {
-      await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email.trim(),
         password
       );
 
-      Alert.alert(
-        'Success!',
-        'Your account has been created.'
+      await createUserProfile(
+        userCredential.user.uid,
+        email.trim(),
+        name.trim()
       );
+
+      Alert.alert('Success!', 'Your account has been created.');
 
       router.replace('/(tabs)/upload-selfie' as any);
     } catch (error: any) {
-      Alert.alert('Unable to create account', error.message);
+      Alert.alert(
+        'Unable to create account',
+        error.message || 'Please try again.'
+      );
     }
   }
 
@@ -74,6 +82,14 @@ export default function SignupScreen() {
 
           <TextInput
             style={styles.input}
+            placeholder="Name"
+            placeholderTextColor="#9B8AA8"
+            value={name}
+            onChangeText={setName}
+          />
+
+          <TextInput
+            style={styles.input}
             placeholder="Email"
             placeholderTextColor="#9B8AA8"
             keyboardType="email-address"
@@ -91,22 +107,15 @@ export default function SignupScreen() {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={signUp}
-          >
-            <Text style={styles.buttonText}>
-              Create Account
-            </Text>
+          <TouchableOpacity style={styles.button} onPress={signUp}>
+            <Text style={styles.buttonText}>Create Account</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.outlineButton}
             onPress={() => router.replace('/' as any)}
           >
-            <Text style={styles.outlineButtonText}>
-              Back
-            </Text>
+            <Text style={styles.outlineButtonText}>Back</Text>
           </TouchableOpacity>
         </ScrollView>
       </TouchableWithoutFeedback>
