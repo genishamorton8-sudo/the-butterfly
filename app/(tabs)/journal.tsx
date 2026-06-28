@@ -14,6 +14,8 @@ import {
   View,
 } from 'react-native';
 
+import { addGrowth } from '../../lib/garden';
+
 const JOURNAL_KEY = '@butterfly_journal_entries';
 
 type JournalEntry = {
@@ -57,6 +59,7 @@ export default function JournalScreen() {
     const updatedEntries = [newEntry, ...entries];
 
     await AsyncStorage.setItem(JOURNAL_KEY, JSON.stringify(updatedEntries));
+    await addGrowth(10);
 
     setEntries(updatedEntries);
     setEntry('');
@@ -103,7 +106,9 @@ export default function JournalScreen() {
             </TouchableOpacity>
 
             {saved && (
-              <Text style={styles.savedText}>Saved. Your words matter.</Text>
+              <Text style={styles.savedText}>
+                Saved. 🌸 Your garden grew by 10 points.
+              </Text>
             )}
           </View>
 

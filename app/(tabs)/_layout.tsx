@@ -17,7 +17,14 @@ export default function TabLayout() {
 
   if (user === undefined) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#FFF9F3', alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#FFF9F3',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <ActivityIndicator size="large" color="#E75480" />
       </View>
     );
@@ -47,15 +54,58 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen name="dashboard" options={{ title: 'Home', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🏠</Text> }} />
-      <Tabs.Screen name="today-word" options={{ title: 'Word', tabBarIcon: () => <Text style={{ fontSize: 22 }}>📖</Text> }} />
-      <Tabs.Screen name="journal" options={{ title: 'Journal', tabBarIcon: () => <Text style={{ fontSize: 22 }}>📝</Text> }} />
-      <Tabs.Screen name="garden" options={{ title: 'Garden', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🌸</Text> }} />
-      <Tabs.Screen name="testimonials" options={{ title: 'Stories', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🦋</Text> }} />
+      <Tabs.Screen
+        name="dashboard"
+        options={{
+          title: 'Home',
+          tabBarIcon: () => <Text style={{ fontSize: 22 }}>🏠</Text>,
+        }}
+      />
+
+      <Tabs.Screen
+        name="today-word"
+        options={{
+          title: 'Word',
+          tabBarIcon: () => <Text style={{ fontSize: 22 }}>📖</Text>,
+        }}
+      />
+
+      <Tabs.Screen
+        name="journal"
+        options={{
+          title: 'Journal',
+          tabBarIcon: () => <Text style={{ fontSize: 22 }}>📝</Text>,
+        }}
+      />
+
+      <Tabs.Screen
+        name="garden"
+        options={{
+          title: 'Garden',
+          tabBarIcon: () => <Text style={{ fontSize: 22 }}>🌸</Text>,
+        }}
+      />
+
+      <Tabs.Screen
+        name="testimonials"
+        options={{
+          title: 'Stories',
+          tabBarIcon: () => <Text style={{ fontSize: 22 }}>🦋</Text>,
+        }}
+      />
+
+      <Tabs.Screen
+        name="emergency"
+        options={{
+          title: 'Help',
+          tabBarIcon: () => <Text style={{ fontSize: 18, fontWeight: '900' }}>SOS</Text>,
+        }}
+      />
 
       <Tabs.Screen name="daily-journey" options={{ href: null }} />
       <Tabs.Screen name="journey" options={{ href: null }} />
       <Tabs.Screen name="mood" options={{ href: null }} />
+      <Tabs.Screen name="mood-response" options={{ href: null }} />
       <Tabs.Screen name="egg-activity" options={{ href: null }} />
       <Tabs.Screen name="celebrate" options={{ href: null }} />
       <Tabs.Screen name="upload-selfie" options={{ href: null }} />

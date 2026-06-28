@@ -7,7 +7,14 @@ import {
   View,
 } from 'react-native';
 
+import { addGrowth } from '../../lib/garden';
+
 export default function TodayWordScreen() {
+  async function continueJourney() {
+    await addGrowth(5);
+    router.push('/(tabs)/daily-journey' as any);
+  }
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.butterfly}>🦋</Text>
@@ -36,11 +43,10 @@ export default function TodayWordScreen() {
         </Text>
       </View>
 
-      <TouchableOpacity
-        style={styles.primaryButton}
-        onPress={() => router.push('/(tabs)/daily-journey' as any)}
-      >
-        <Text style={styles.primaryButtonText}>Continue Today’s Journey</Text>
+      <TouchableOpacity style={styles.primaryButton} onPress={continueJourney}>
+        <Text style={styles.primaryButtonText}>
+          Continue Today’s Journey +5
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity

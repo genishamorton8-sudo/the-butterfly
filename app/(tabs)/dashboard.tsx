@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
+import { useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -11,6 +12,8 @@ import {
 import { auth } from '../../lib/firebase';
 
 export default function DashboardScreen() {
+  const [mood, setMood] = useState('');
+
   async function handleSignOut() {
     try {
       await signOut(auth);
@@ -26,6 +29,47 @@ export default function DashboardScreen() {
 
       <Text style={styles.title}>Welcome back, friend</Text>
       <Text style={styles.subtitle}>Your healing home base.</Text>
+
+      <TouchableOpacity
+        style={styles.emergencyButton}
+        onPress={() => router.push('/(tabs)/emergency' as any)}
+      >
+        <Text style={styles.emergencyButtonText}>Need Immediate Support?</Text>
+      </TouchableOpacity>
+
+      <View style={styles.checkInCard}>
+        <Text style={styles.checkInTitle}>How are you today?</Text>
+
+        <View style={styles.moodGrid}>
+          {['Peaceful', 'Discouraged', 'Anxious', 'Hopeful', 'Overwhelmed'].map(
+            (item) => (
+              <TouchableOpacity
+                key={item}
+                style={[
+                  styles.moodButton,
+                  mood === item && styles.selectedMoodButton,
+                ]}
+                onPress={() => {
+                  setMood(item);
+                  router.push({
+                    pathname: '/(tabs)/mood-response',
+                    params: { mood: item },
+                  } as any);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.moodButtonText,
+                    mood === item && styles.selectedMoodButtonText,
+                  ]}
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )
+          )}
+        </View>
+      </View>
 
       <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
@@ -48,6 +92,8 @@ export default function DashboardScreen() {
         <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
         <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
         <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
+        <HomeButton title="Upload Selfie" emoji="📸" onPress={() => router.push('/(tabs)/upload-selfie' as any)} />
+        <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/(tabs)/emergency' as any)} />
       </View>
 
       <View style={styles.progressCard}>
@@ -90,7 +136,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 22,
     paddingTop: 55,
-    paddingBottom: 90,
+    paddingBottom: 120,
     alignItems: 'center',
   },
   butterfly: {
@@ -109,7 +155,60 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 8,
+    marginBottom: 18,
+  },
+  emergencyButton: {
+    backgroundColor: '#4B1D7A',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  emergencyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  checkInCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 26,
+    padding: 20,
+    borderWidth: 2,
+    borderColor: '#F1D7A7',
     marginBottom: 22,
+  },
+  checkInTitle: {
+    color: '#4B1D7A',
+    fontSize: 23,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  moodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  moodButton: {
+    backgroundColor: '#F4E7F8',
+    width: '48%',
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  selectedMoodButton: {
+    backgroundColor: '#E75480',
+  },
+  moodButtonText: {
+    color: '#4B1D7A',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  selectedMoodButtonText: {
+    color: '#FFFFFF',
   },
   heroCard: {
     backgroundColor: '#FFFFFF',
