@@ -42,41 +42,12 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.grid}>
-        <HomeButton
-          title="Today’s Word"
-          emoji="📖"
-          onPress={() => router.push('/(tabs)/today-word' as any)}
-        />
-
-        <HomeButton
-          title="Mood Check"
-          emoji="😊"
-          onPress={() => router.push('/(tabs)/mood' as any)}
-        />
-
-        <HomeButton
-          title="Journal"
-          emoji="📝"
-          onPress={() => router.push('/(tabs)/journal' as any)}
-        />
-
-        <HomeButton
-          title="Prayer"
-          emoji="🙏"
-          onPress={() => router.push('/prayer' as any)}
-        />
-
-        <HomeButton
-          title="Celebrate"
-          emoji="🎉"
-          onPress={() => router.push('/(tabs)/celebrate' as any)}
-        />
-
-        <HomeButton
-          title="Garden"
-          emoji="🌸"
-          onPress={() => router.push('/(tabs)/garden' as any)}
-        />
+        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
+        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
+        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
+        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
+        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
+        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
       </View>
 
       <View style={styles.progressCard}>

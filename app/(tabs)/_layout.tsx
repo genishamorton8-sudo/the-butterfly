@@ -1,13 +1,66 @@
-import { Stack } from 'expo-router';
-import React from 'react';
+import { Redirect, Tabs } from 'expo-router';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { auth } from '../../lib/firebase';
 
-export default function RootLayout() {
+export default function TabLayout() {
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  if (user === undefined) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#FFF9F3', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color="#E75480" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="signup" />
-      <Stack.Screen name="login" />
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#E75480',
+        tabBarInactiveTintColor: '#6B4A78',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#F1D7A7',
+          borderTopWidth: 2,
+          height: 78,
+          paddingBottom: 12,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '900',
+        },
+      }}
+    >
+      <Tabs.Screen name="dashboard" options={{ title: 'Home', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🏠</Text> }} />
+      <Tabs.Screen name="today-word" options={{ title: 'Word', tabBarIcon: () => <Text style={{ fontSize: 22 }}>📖</Text> }} />
+      <Tabs.Screen name="journal" options={{ title: 'Journal', tabBarIcon: () => <Text style={{ fontSize: 22 }}>📝</Text> }} />
+      <Tabs.Screen name="garden" options={{ title: 'Garden', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🌸</Text> }} />
+      <Tabs.Screen name="testimonials" options={{ title: 'Stories', tabBarIcon: () => <Text style={{ fontSize: 22 }}>🦋</Text> }} />
+
+      <Tabs.Screen name="daily-journey" options={{ href: null }} />
+      <Tabs.Screen name="journey" options={{ href: null }} />
+      <Tabs.Screen name="mood" options={{ href: null }} />
+      <Tabs.Screen name="egg-activity" options={{ href: null }} />
+      <Tabs.Screen name="celebrate" options={{ href: null }} />
+      <Tabs.Screen name="upload-selfie" options={{ href: null }} />
+      <Tabs.Screen name="accountability" options={{ href: null }} />
+      <Tabs.Screen name="index" options={{ href: null }} />
+    </Tabs>
   );
 }

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   Keyboard,
@@ -103,14 +103,26 @@ export default function JournalScreen() {
             </TouchableOpacity>
 
             {saved && (
-              <Text style={styles.savedText}>
-                Saved. Your words matter.
-              </Text>
+              <Text style={styles.savedText}>Saved. Your words matter.</Text>
             )}
           </View>
 
           <TouchableOpacity style={styles.button} onPress={saveEntry}>
             <Text style={styles.buttonText}>Save Journal Entry</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={() => router.push('/(tabs)/celebrate' as any)}
+          >
+            <Text style={styles.continueButtonText}>Continue to Celebrate</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.replace('/(tabs)/dashboard' as any)}
+          >
+            <Text style={styles.backButtonText}>Back to Dashboard</Text>
           </TouchableOpacity>
 
           <Text style={styles.historyTitle}>Journal History</Text>
@@ -218,11 +230,38 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderRadius: 30,
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 14,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
+    fontWeight: '800',
+  },
+  continueButton: {
+    backgroundColor: '#4B1D7A',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  continueButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '800',
+  },
+  backButton: {
+    borderColor: '#4B1D7A',
+    borderWidth: 2,
+    width: '100%',
+    paddingVertical: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  backButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
     fontWeight: '800',
   },
   historyTitle: {

@@ -1,82 +1,50 @@
-import { useState } from 'react';
+import { router } from 'expo-router';
 import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export default function CelebrateScreen() {
-  const [post, setPost] = useState('');
-  const [shared, setShared] = useState(false);
-
-  function postCelebration() {
-    Keyboard.dismiss();
-    setShared(true);
-  }
-
   return (
-    <KeyboardAvoidingView
-      style={styles.wrapper}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          style={styles.screen}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={styles.icon}>🎉</Text>
-          <Text style={styles.title}>Celebrate Progress</Text>
-          <Text style={styles.subtitle}>Small wins still count.</Text>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <Text style={styles.icon}>🎉</Text>
 
-          <View style={styles.card}>
-            <Text style={styles.prompt}>Today I celebrate...</Text>
+      <Text style={styles.title}>Celebrate Your Win</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Write your win here..."
-              placeholderTextColor="#9B8AA8"
-              multiline
-              value={post}
-              onChangeText={(text) => {
-                setPost(text);
-                setShared(false);
-              }}
-              textAlignVertical="top"
-            />
+      <Text style={styles.subtitle}>
+        Every step matters. Even the small ones.
+      </Text>
 
-            <TouchableOpacity style={styles.doneButton} onPress={Keyboard.dismiss}>
-              <Text style={styles.doneButtonText}>Done Writing</Text>
-            </TouchableOpacity>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Today, you showed up.</Text>
 
-            {shared && (
-              <Text style={styles.sharedText}>
-                Celebration posted. Pain lied. Purpose didn’t.
-              </Text>
-            )}
-          </View>
+        <Text style={styles.cardText}>
+          You paused. You reflected. You gave yourself space to heal.
+          That is worth celebrating.
+        </Text>
+      </View>
 
-          <TouchableOpacity style={styles.button} onPress={postCelebration}>
-            <Text style={styles.buttonText}>Post Celebration</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      <TouchableOpacity
+        style={styles.primaryButton}
+        onPress={() => router.push('/(tabs)/garden' as any)}
+      >
+        <Text style={styles.primaryButtonText}>Visit My Garden</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => router.replace('/(tabs)/dashboard' as any)}
+      >
+        <Text style={styles.secondaryButtonText}>Back to Dashboard</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
-  },
   screen: {
     flex: 1,
     backgroundColor: '#FFF9F3',
@@ -84,17 +52,17 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 24,
     paddingTop: 70,
-    paddingBottom: 120,
+    paddingBottom: 100,
     alignItems: 'center',
   },
   icon: {
-    fontSize: 56,
+    fontSize: 58,
     marginBottom: 12,
   },
   title: {
     color: '#4B1D7A',
     fontSize: 34,
-    fontWeight: '800',
+    fontWeight: '900',
     textAlign: 'center',
   },
   subtitle: {
@@ -112,53 +80,45 @@ const styles = StyleSheet.create({
     padding: 22,
     borderWidth: 2,
     borderColor: '#F1D7A7',
-    marginBottom: 22,
+    marginBottom: 24,
   },
-  prompt: {
+  cardTitle: {
     color: '#4B1D7A',
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 14,
+    fontSize: 24,
+    fontWeight: '900',
     textAlign: 'center',
+    marginBottom: 12,
   },
-  input: {
-    backgroundColor: '#F4E7F8',
-    minHeight: 190,
-    borderRadius: 18,
-    padding: 16,
-    fontSize: 17,
+  cardText: {
     color: '#3F2A4D',
-  },
-  doneButton: {
-    marginTop: 14,
-    borderColor: '#4B1D7A',
-    borderWidth: 2,
-    paddingVertical: 12,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
-  doneButtonText: {
-    color: '#4B1D7A',
-    fontWeight: '800',
-    fontSize: 16,
-  },
-  sharedText: {
-    color: '#D4AF37',
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 17,
+    lineHeight: 26,
     textAlign: 'center',
-    marginTop: 16,
   },
-  button: {
+  primaryButton: {
     backgroundColor: '#E75480',
     width: '100%',
-    paddingVertical: 18,
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  secondaryButton: {
+    borderColor: '#4B1D7A',
+    borderWidth: 2,
+    width: '100%',
+    paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '800',
+  secondaryButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
+    fontWeight: '900',
   },
 });
