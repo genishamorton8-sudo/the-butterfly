@@ -1,10 +1,77 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { getGarden, getGardenStage } from '../../lib/garden';
+
+const TRANSFORMATION_KEY = '@butterfly_transformation_photos';
+
+type TransformationPhoto = {
+  id: string;
+  uri: string;
+  date: string;
+  growth: number;
+  stage: string;
+};
 
 export default function UploadSelfieScreen() {
-  const [selfie, setSelfie] = useState<string | null>(null);
+  const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<TransformationPhoto[]>([]);
+
+  useEffect(() => {
+    loadPhotos();
+  }, []);
+
+  async function loadPhotos() {
+    const savedPhotos = await AsyncStorage.getItem(TRANSFORMATION_KEY);
+
+    if (savedPhotos) {
+      const parsedPhotos = JSON.parse(savedPhotos);
+      setPhotos(parsedPhotos);
+
+      if (parsedPhotos.length > 0) {
+        setCurrentPhoto(parsedPhotos[0].uri);
+      }
+    }
+  }
+
+  async function savePhoto(uri: string) {
+    const garden = await getGarden();
+    const stage = getGardenStage(garden.growth);
+
+    const newPhoto: TransformationPhoto = {
+      id: Date.now().toString(),
+      uri,
+      date: new Date().toLocaleDateString(),
+      growth: garden.growth,
+      stage: stage.title,
+    };
+
+    const updatedPhotos = [newPhoto, ...photos];
+
+    await AsyncStorage.setItem(
+      TRANSFORMATION_KEY,
+      JSON.stringify(updatedPhotos)
+    );
+
+    setPhotos(updatedPhotos);
+    setCurrentPhoto(uri);
+
+    Alert.alert(
+      'Photo Saved',
+      'Your transformation photo has been added to your journey.'
+    );
+  }
 
   async function choosePhoto() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -21,7 +88,7 @@ export default function UploadSelfieScreen() {
     });
 
     if (!result.canceled) {
-      setSelfie(result.assets[0].uri);
+      await savePhoto(result.assets[0].uri);
     }
   }
 
@@ -40,45 +107,79 @@ export default function UploadSelfieScreen() {
     });
 
     if (!result.canceled) {
-      setSelfie(result.assets[0].uri);
+      await savePhoto(result.assets[0].uri);
     }
   }
 
   return (
-    <View style={styles.screen}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.butterfly}>🦋</Text>
 
-      <Text style={styles.title}>Upload Your Selfie</Text>
+      <Text style={styles.title}>My Transformation</Text>
 
       <Text style={styles.message}>
-        This is your beginning photo. One day, you will look back and see how far you have come.
+        Capture your growth as you heal, bloom, and become.
       </Text>
 
-      {selfie ? (
-        <Image source={{ uri: selfie }} style={styles.selfie} />
+      {currentPhoto ? (
+        <Image source={{ uri: currentPhoto }} style={styles.selfie} />
       ) : (
         <View style={styles.circle}>
-          <Text style={styles.circleText}>Your selfie will appear here</Text>
+          <Text style={styles.circleText}>
+            Your first transformation photo will appear here
+          </Text>
         </View>
       )}
 
       <TouchableOpacity style={styles.button} onPress={takeSelfie}>
-        <Text style={styles.buttonText}>Take a Selfie</Text>
+        <Text style={styles.buttonText}>Take a New Photo</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.outlineButton} onPress={choosePhoto}>
         <Text style={styles.outlineButtonText}>Choose from Photos</Text>
       </TouchableOpacity>
 
-      {selfie && (
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() => router.push('/journey')}
-        >
-          <Text style={styles.continueButtonText}>Continue My Journey →</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.gardenButton}
+        onPress={() => router.push('/(tabs)/garden' as any)}
+      >
+        <Text style={styles.gardenButtonText}>View My Butterfly Garden</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.timelineTitle}>Transformation Timeline</Text>
+
+      {photos.length === 0 ? (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>
+            No photos yet. Start with your first transformation photo.
+          </Text>
+        </View>
+      ) : (
+        photos.map((photo, index) => (
+          <View key={photo.id} style={styles.timelineCard}>
+            <Image source={{ uri: photo.uri }} style={styles.timelineImage} />
+
+            <View style={styles.timelineInfo}>
+              <Text style={styles.timelineStage}>
+                {index === 0 ? 'Current Photo' : 'Journey Photo'}
+              </Text>
+
+              <Text style={styles.timelineText}>
+                Date: {photo.date}
+              </Text>
+
+              <Text style={styles.timelineText}>
+                Growth Score: {photo.growth}
+              </Text>
+
+              <Text style={styles.timelineText}>
+                Stage: {photo.stage}
+              </Text>
+            </View>
+          </View>
+        ))
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -86,27 +187,30 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#FFF9F3',
+  },
+  content: {
     paddingHorizontal: 26,
-    paddingTop: 80,
+    paddingTop: 70,
+    paddingBottom: 130,
     alignItems: 'center',
   },
   butterfly: {
     fontSize: 56,
-    marginBottom: 20,
+    marginBottom: 14,
   },
   title: {
     color: '#4B1D7A',
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: 34,
+    fontWeight: '900',
     textAlign: 'center',
-    marginBottom: 18,
+    marginBottom: 14,
   },
   message: {
     color: '#3F2A4D',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
-    lineHeight: 28,
-    marginBottom: 35,
+    lineHeight: 26,
+    marginBottom: 28,
   },
   circle: {
     width: 220,
@@ -117,13 +221,14 @@ const styles = StyleSheet.create({
     borderColor: '#D4AF37',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 35,
+    marginBottom: 28,
   },
   circleText: {
     color: '#4B1D7A',
-    fontWeight: '700',
+    fontWeight: '800',
     textAlign: 'center',
     paddingHorizontal: 20,
+    lineHeight: 22,
   },
   selfie: {
     width: 220,
@@ -131,12 +236,12 @@ const styles = StyleSheet.create({
     borderRadius: 110,
     borderWidth: 4,
     borderColor: '#D4AF37',
-    marginBottom: 35,
+    marginBottom: 28,
   },
   button: {
     backgroundColor: '#E75480',
     width: '100%',
-    paddingVertical: 18,
+    paddingVertical: 17,
     borderRadius: 30,
     alignItems: 'center',
     marginBottom: 14,
@@ -144,7 +249,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '900',
   },
   outlineButton: {
     borderColor: '#4B1D7A',
@@ -153,23 +258,79 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
+    marginBottom: 14,
   },
   outlineButtonText: {
     color: '#4B1D7A',
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: '800',
   },
-  continueButton: {
+  gardenButton: {
     backgroundColor: '#4B1D7A',
     width: '100%',
-    paddingVertical: 18,
+    paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
-    marginTop: 18,
+    marginBottom: 28,
   },
-  continueButtonText: {
+  gardenButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  timelineTitle: {
+    color: '#4B1D7A',
+    fontSize: 25,
+    fontWeight: '900',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 22,
+    padding: 20,
+    borderWidth: 2,
+    borderColor: '#F1D7A7',
+  },
+  emptyText: {
+    color: '#3F2A4D',
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  timelineCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 22,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#F1D7A7',
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  timelineImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginRight: 14,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+  },
+  timelineInfo: {
+    flex: 1,
+  },
+  timelineStage: {
+    color: '#E75480',
+    fontSize: 16,
+    fontWeight: '900',
+    marginBottom: 4,
+  },
+  timelineText: {
+    color: '#3F2A4D',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 3,
   },
 });

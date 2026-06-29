@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -9,11 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { auth } from '../../lib/firebase';
 
 export default function DashboardScreen() {
-  const [mood, setMood] = useState('');
-
   async function handleSignOut() {
     try {
       await signOut(auth);
@@ -28,84 +26,151 @@ export default function DashboardScreen() {
       <Text style={styles.butterfly}>🦋</Text>
 
       <Text style={styles.title}>Welcome back, friend</Text>
-      <Text style={styles.subtitle}>Your healing home base.</Text>
+
+      <Text style={styles.subtitle}>
+        Your healing home base.
+      </Text>
 
       <TouchableOpacity
         style={styles.emergencyButton}
-        onPress={() => router.push('/(tabs)/emergency' as any)}
+        onPress={() => router.push('/emergency' as any)}
       >
-        <Text style={styles.emergencyButtonText}>Need Immediate Support?</Text>
+        <Text style={styles.emergencyButtonText}>
+          Need Immediate Support?
+        </Text>
       </TouchableOpacity>
 
-      <View style={styles.checkInCard}>
-        <Text style={styles.checkInTitle}>How are you today?</Text>
-
-        <View style={styles.moodGrid}>
-          {['Peaceful', 'Discouraged', 'Anxious', 'Hopeful', 'Overwhelmed'].map(
-            (item) => (
-              <TouchableOpacity
-                key={item}
-                style={[
-                  styles.moodButton,
-                  mood === item && styles.selectedMoodButton,
-                ]}
-                onPress={() => {
-                  setMood(item);
-                  router.push({
-                    pathname: '/(tabs)/mood-response',
-                    params: { mood: item },
-                  } as any);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.moodButtonText,
-                    mood === item && styles.selectedMoodButtonText,
-                  ]}
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            )
-          )}
-        </View>
-      </View>
-
       <View style={styles.heroCard}>
-        <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
+        <Text style={styles.heroTitle}>
+          Today’s Healing Journey
+        </Text>
+
         <Text style={styles.heroText}>
-          Start here. One step at a time. No pressure. Just progress.
+          Start here. One gentle step at a time.
         </Text>
 
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => router.push('/(tabs)/daily-journey' as any)}
         >
-          <Text style={styles.primaryButtonText}>Begin Today’s Journey</Text>
+          <Text style={styles.primaryButtonText}>
+            Begin Today’s Journey
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.featureCard}>
+        <Text style={styles.featureLabel}>Foundation</Text>
+
+        <Text style={styles.featureTitle}>
+          🌿 Butterfly Healing Studio
+        </Text>
+
+        <Text style={styles.featureText}>
+          Begin with Rewrite the Scene, a guided imagery rescripting exercise
+          for healing painful memories with compassion, protection, truth, and hope.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.healingButton}
+          onPress={() => router.push('/healing-exercises' as any)}
+        >
+          <Text style={styles.healingButtonText}>
+            Open Healing Studio
+          </Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.grid}>
-        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
-        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
-        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
-        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
-        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
-        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
-        <HomeButton title="Upload Selfie" emoji="📸" onPress={() => router.push('/(tabs)/upload-selfie' as any)} />
-        <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/(tabs)/emergency' as any)} />
+        <HomeButton
+          title="Mood Check"
+          emoji="😊"
+          onPress={() => router.push('/(tabs)/mood' as any)}
+        />
+
+        <HomeButton
+          title="Today’s Word"
+          emoji="📖"
+          onPress={() => router.push('/(tabs)/today-word' as any)}
+        />
+
+        <HomeButton
+          title="Journal"
+          emoji="📝"
+          onPress={() => router.push('/(tabs)/journal' as any)}
+        />
+
+        <HomeButton
+          title="Prayer"
+          emoji="🙏"
+          onPress={() => router.push('/prayer' as any)}
+        />
+
+        <HomeButton
+          title="Garden"
+          emoji="🌸"
+          onPress={() => router.push('/(tabs)/garden' as any)}
+        />
+
+        <HomeButton
+          title="My Transformation"
+          emoji="📸"
+          onPress={() => router.push('/(tabs)/upload-selfie' as any)}
+        />
+
+        <HomeButton
+          title="Testimonials"
+          emoji="🦋"
+          onPress={() => router.push('/(tabs)/testimonials' as any)}
+        />
+
+        <HomeButton
+          title="Accountability"
+          emoji="🤝"
+          onPress={() => router.push('/(tabs)/accountability' as any)}
+        />
+
+        <HomeButton
+          title="Celebrate"
+          emoji="🎉"
+          onPress={() => router.push('/(tabs)/celebrate' as any)}
+        />
+
+        <HomeButton
+          title="Emergency Help"
+          emoji="💙"
+          onPress={() => router.push('/emergency' as any)}
+        />
       </View>
 
       <View style={styles.progressCard}>
-        <Text style={styles.sectionTitle}>Butterfly Progress</Text>
-        <Text style={styles.progressStage}>🥚 Beginning Stage</Text>
-        <Text style={styles.progressText}>
-          Your transformation has started. Keep showing up.
+        <Text style={styles.sectionTitle}>
+          Butterfly Progress
         </Text>
+
+        <Text style={styles.progressStage}>
+          🌱 Your Garden Is Growing
+        </Text>
+
+        <Text style={styles.progressText}>
+          Every prayer, journal entry, mood check, scripture, and healing
+          exercise helps your Butterfly Garden bloom.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.gardenButton}
+          onPress={() => router.push('/(tabs)/garden' as any)}
+        >
+          <Text style={styles.gardenButtonText}>
+            View My Butterfly Garden
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutButtonText}>Sign Out</Text>
+        <Text style={styles.signOutButtonText}>
+          Sign Out
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -136,7 +201,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 22,
     paddingTop: 55,
-    paddingBottom: 120,
+    paddingBottom: 130,
     alignItems: 'center',
   },
   butterfly: {
@@ -170,46 +235,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '900',
   },
-  checkInCard: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    borderRadius: 26,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: '#F1D7A7',
-    marginBottom: 22,
-  },
-  checkInTitle: {
-    color: '#4B1D7A',
-    fontSize: 23,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-  moodGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  moodButton: {
-    backgroundColor: '#F4E7F8',
-    width: '48%',
-    borderRadius: 18,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  selectedMoodButton: {
-    backgroundColor: '#E75480',
-  },
-  moodButtonText: {
-    color: '#4B1D7A',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  selectedMoodButtonText: {
-    color: '#FFFFFF',
-  },
   heroCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -217,7 +242,7 @@ const styles = StyleSheet.create({
     padding: 22,
     borderWidth: 2,
     borderColor: '#F1D7A7',
-    marginBottom: 22,
+    marginBottom: 20,
   },
   heroTitle: {
     color: '#4B1D7A',
@@ -242,6 +267,47 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 17,
+    fontWeight: '900',
+  },
+  featureCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 28,
+    padding: 22,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginBottom: 22,
+  },
+  featureLabel: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  featureTitle: {
+    color: '#4B1D7A',
+    fontSize: 24,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  featureText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  healingButton: {
+    backgroundColor: '#4B1D7A',
+    paddingVertical: 15,
+    borderRadius: 28,
+    alignItems: 'center',
+  },
+  healingButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
   },
   grid: {
@@ -301,6 +367,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
   },
+  gardenButton: {
+    backgroundColor: '#4B1D7A',
+    paddingVertical: 14,
+    borderRadius: 28,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  gardenButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
   signOutButton: {
     borderColor: '#4B1D7A',
     borderWidth: 2,
@@ -315,3 +393,4 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
+
