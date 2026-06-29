@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
+import { useEffect } from 'react';
 import {
   Alert,
   ScrollView,
@@ -10,8 +11,13 @@ import {
 } from 'react-native';
 
 import { auth } from '../../lib/firebase';
+import { createOrUpdateMyPartnerProfile } from '../../lib/partners';
 
 export default function DashboardScreen() {
+  useEffect(() => {
+    createOrUpdateMyPartnerProfile();
+  }, []);
+
   async function handleSignOut() {
     try {
       await signOut(auth);
@@ -393,4 +399,3 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
 });
-

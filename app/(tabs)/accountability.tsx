@@ -25,13 +25,28 @@ export default function AccountabilityScreen() {
         Healing is easier when you do not walk alone.
       </Text>
 
-      <View style={styles.card}>
+      <View style={styles.partnerCard}>
         <Text style={styles.cardTitle}>Already Paired Through Sankofa?</Text>
 
         <Text style={styles.cardText}>
-          Stay connected with your accountability partner. Pray together, check in,
-          encourage one another, and celebrate every step of growth.
+          Connect with your Sankofa accountability partner inside The Butterfly.
+          You will be able to see progress, send encouragement, and celebrate
+          growth together.
         </Text>
+
+        <Text style={styles.privacyText}>
+          Private journals, prayers, and healing exercise responses are not shared.
+          Your partner only sees progress and milestones.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.partnerButton}
+          onPress={() => router.push('/connect-partner' as any)}
+        >
+          <Text style={styles.partnerButtonText}>
+            Connect With My Sankofa Partner
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
@@ -122,6 +137,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 26,
   },
+  partnerCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginBottom: 18,
+  },
   card: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -142,6 +166,28 @@ const styles = StyleSheet.create({
     color: '#3F2A4D',
     fontSize: 16,
     lineHeight: 25,
+    textAlign: 'center',
+  },
+  privacyText: {
+    color: '#E75480',
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'center',
+    fontWeight: '800',
+    marginTop: 14,
+    marginBottom: 18,
+  },
+  partnerButton: {
+    backgroundColor: '#4B1D7A',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  partnerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
     textAlign: 'center',
   },
   sankofaCard: {
