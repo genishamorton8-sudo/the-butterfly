@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
     ScrollView,
     StyleSheet,
     Text,
@@ -9,29 +11,38 @@ import {
     View,
 } from 'react-native';
 
-type Member = {
-  id: string;
-  name: string;
-  email: string;
-  status: string;
-  partner: string;
-};
-
-const sampleMembers: Member[] = [
-  {
-    id: '1',
-    name: 'Genisha Morton',
-    email: 'bleuolive19@gmail.com',
-    status: 'Admin',
-    partner: 'Not Assigned',
-  },
-];
+import { db } from '../../lib/firebase';
+import { PartnerProfile } from '../../lib/partners';
 
 export default function MembersScreen() {
+  const [members, setMembers] = useState<PartnerProfile[]>([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const filteredMembers = sampleMembers.filter((member) => {
-    const text = `${member.name} ${member.email}`.toLowerCase();
+  useEffect(() => {
+    loadMembers();
+  }, []);
+
+  async function loadMembers() {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, orderBy('email'));
+      const snapshot = await getDocs(q);
+
+      const userList = snapshot.docs.map((docSnap) => {
+        return docSnap.data() as PartnerProfile;
+      });
+
+      setMembers(userList);
+    } catch {
+      setMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const filteredMembers = members.filter((member) => {
+    const text = `${member.displayName} ${member.email}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
 
@@ -42,7 +53,7 @@ export default function MembersScreen() {
       <Text style={styles.title}>Members</Text>
 
       <Text style={styles.subtitle}>
-        View and manage Sankofa members connected to The Butterfly.
+        View real Butterfly members registered in Firebase.
       </Text>
 
       <TextInput
@@ -53,26 +64,58 @@ export default function MembersScreen() {
         onChangeText={setSearch}
       />
 
-      {filteredMembers.map((member) => (
-        <View key={member.id} style={styles.memberCard}>
-          <Text style={styles.memberName}>{member.name}</Text>
-          <Text style={styles.memberEmail}>{member.email}</Text>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Status:</Text>
-            <Text style={styles.infoValue}>{member.status}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Partner:</Text>
-            <Text style={styles.infoValue}>{member.partner}</Text>
-          </View>
-
-          <TouchableOpacity style={styles.smallButton}>
-            <Text style={styles.smallButtonText}>View Profile</Text>
-          </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#E75480" />
+      ) : filteredMembers.length === 0 ? (
+        <View style={styles.memberCard}>
+          <Text style={styles.emptyText}>No members found yet.</Text>
         </View>
-      ))}
+      ) : (
+        filteredMembers.map((member) => (
+          <View key={member.uid} style={styles.memberCard}>
+            <Text style={styles.memberName}>
+              {member.displayName || 'Butterfly Member'}
+            </Text>
+
+            <Text style={styles.memberEmail}>{member.email}</Text>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Role:</Text>
+              <Text style={styles.infoValue}>{member.role}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Partner:</Text>
+              <Text style={styles.infoValue}>
+                {member.partnerUid ? 'Assigned' : 'Not Assigned'}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Code:</Text>
+              <Text style={styles.infoValue}>{member.partnerCode}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.smallButton}
+              onPress={() =>
+                router.push({
+                  pathname: '/admin/member',
+                  params: {
+                    name: member.displayName || 'Butterfly Member',
+                    email: member.email,
+                    role: member.role,
+                    partner: member.partnerUid ? 'Assigned' : 'Not Assigned',
+                    code: member.partnerCode,
+                  },
+                } as any)
+              }
+            >
+              <Text style={styles.smallButtonText}>View Profile</Text>
+            </TouchableOpacity>
+          </View>
+        ))
+      )}
 
       <TouchableOpacity
         style={styles.backButton}
@@ -161,6 +204,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3F2A4D',
     fontWeight: '700',
+  },
+  emptyText: {
+    color: '#3F2A4D',
+    fontSize: 17,
+    fontWeight: '800',
+    textAlign: 'center',
   },
   smallButton: {
     backgroundColor: '#4B1D7A',
