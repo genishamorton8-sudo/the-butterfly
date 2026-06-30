@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -10,14 +11,18 @@ import {
   View,
 } from 'react-native';
 
-import { auth } from '../../lib/firebase';
+import { auth, db } from '../../lib/firebase';
 import {
   createOrUpdateMyPartnerProfile,
   getMyPartnerProfile,
+  PartnerProfile,
 } from '../../lib/partners';
 
 export default function DashboardScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [myProfile, setMyProfile] = useState<PartnerProfile | null>(null);
+  const [butterflyPartner, setButterflyPartner] =
+    useState<PartnerProfile | null>(null);
 
   useEffect(() => {
     loadProfile();
@@ -27,9 +32,19 @@ export default function DashboardScreen() {
     await createOrUpdateMyPartnerProfile();
 
     const profile = await getMyPartnerProfile();
+    setMyProfile(profile);
 
     if (profile?.role === 'admin') {
       setIsAdmin(true);
+    }
+
+    if (profile?.partnerUid) {
+      const partnerRef = doc(db, 'users', profile.partnerUid);
+      const partnerSnap = await getDoc(partnerRef);
+
+      if (partnerSnap.exists()) {
+        setButterflyPartner(partnerSnap.data() as PartnerProfile);
+      }
     }
   }
 
@@ -55,7 +70,7 @@ export default function DashboardScreen() {
           style={styles.adminButton}
           onPress={() => router.push('/admin' as any)}
         >
-          <Text style={styles.adminButtonText}>🦋 Butterfly Admin</Text>
+          <Text style={styles.adminButtonText}>🦋 Butterfly Care</Text>
         </TouchableOpacity>
       )}
 
@@ -66,7 +81,51 @@ export default function DashboardScreen() {
         <Text style={styles.emergencyButtonText}>Need Immediate Support?</Text>
       </TouchableOpacity>
 
-      <View style={styles.heroCard}>
+      <View style={styles.partnerCard}>
+        <Text style={styles.partnerLabel}>Butterfly Connection</Text>
+
+        <Text style={styles.partnerTitle}>🦋 My Butterfly Partner</Text>
+
+        {butterflyPartner ? (
+          <>
+            <Text style={styles.partnerName}>
+              {butterflyPartner.displayName || 'Butterfly Partner'}
+            </Text>
+
+            <Text style={styles.partnerText}>
+              You are connected for encouragement, prayer, and growth.
+            </Text>
+
+            <View style={styles.partnerActions}>
+              <TouchableOpacity style={styles.partnerActionButton}>
+                <Text style={styles.partnerActionText}>💬 Encourage</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.partnerActionButton}>
+                <Text style={styles.partnerActionText}>🙏 Pray Together</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.partnerName}>No Butterfly Partner Yet</Text>
+
+            <Text style={styles.partnerText}>
+              Once you are paired, your Butterfly Partner will appear here.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.partnerRequestButton}
+              onPress={() => router.push('/(tabs)/accountability' as any)}
+            >
+              <Text style={styles.partnerRequestText}>
+                Learn About Butterfly Partners
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+            <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
 
         <Text style={styles.heroText}>
@@ -107,7 +166,7 @@ export default function DashboardScreen() {
         <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
         <HomeButton title="My Transformation" emoji="📸" onPress={() => router.push('/(tabs)/upload-selfie' as any)} />
         <HomeButton title="Testimonials" emoji="🦋" onPress={() => router.push('/(tabs)/testimonials' as any)} />
-        <HomeButton title="Accountability" emoji="🤝" onPress={() => router.push('/(tabs)/accountability' as any)} />
+        <HomeButton title="Butterfly Partners" emoji="🤝" onPress={() => router.push('/(tabs)/accountability' as any)} />
         <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
         <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/emergency' as any)} />
       </View>
@@ -199,6 +258,69 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   emergencyButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
+  partnerCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 28,
+    padding: 22,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginBottom: 20,
+  },
+  partnerLabel: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  partnerTitle: {
+    color: '#4B1D7A',
+    fontSize: 24,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  partnerName: {
+    color: '#E75480',
+    fontSize: 21,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  partnerText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  partnerActions: {
+    width: '100%',
+  },
+  partnerActionButton: {
+    backgroundColor: '#4B1D7A',
+    paddingVertical: 14,
+    borderRadius: 28,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  partnerActionText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  partnerRequestButton: {
+    backgroundColor: '#E75480',
+    paddingVertical: 14,
+    borderRadius: 28,
+    alignItems: 'center',
+  },
+  partnerRequestText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
   heroCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
