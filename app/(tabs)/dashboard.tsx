@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -11,12 +11,27 @@ import {
 } from 'react-native';
 
 import { auth } from '../../lib/firebase';
-import { createOrUpdateMyPartnerProfile } from '../../lib/partners';
+import {
+  createOrUpdateMyPartnerProfile,
+  getMyPartnerProfile,
+} from '../../lib/partners';
 
 export default function DashboardScreen() {
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
-    createOrUpdateMyPartnerProfile();
+    loadProfile();
   }, []);
+
+  async function loadProfile() {
+    await createOrUpdateMyPartnerProfile();
+
+    const profile = await getMyPartnerProfile();
+
+    if (profile?.role === 'admin') {
+      setIsAdmin(true);
+    }
+  }
 
   async function handleSignOut() {
     try {
@@ -33,23 +48,26 @@ export default function DashboardScreen() {
 
       <Text style={styles.title}>Welcome back, friend</Text>
 
-      <Text style={styles.subtitle}>
-        Your healing home base.
-      </Text>
+      <Text style={styles.subtitle}>Your healing home base.</Text>
+
+      {isAdmin && (
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => router.push('/admin' as any)}
+        >
+          <Text style={styles.adminButtonText}>🦋 Butterfly Admin</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         style={styles.emergencyButton}
         onPress={() => router.push('/emergency' as any)}
       >
-        <Text style={styles.emergencyButtonText}>
-          Need Immediate Support?
-        </Text>
+        <Text style={styles.emergencyButtonText}>Need Immediate Support?</Text>
       </TouchableOpacity>
 
       <View style={styles.heroCard}>
-        <Text style={styles.heroTitle}>
-          Today’s Healing Journey
-        </Text>
+        <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
 
         <Text style={styles.heroText}>
           Start here. One gentle step at a time.
@@ -59,18 +77,14 @@ export default function DashboardScreen() {
           style={styles.primaryButton}
           onPress={() => router.push('/(tabs)/daily-journey' as any)}
         >
-          <Text style={styles.primaryButtonText}>
-            Begin Today’s Journey
-          </Text>
+          <Text style={styles.primaryButtonText}>Begin Today’s Journey</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.featureCard}>
         <Text style={styles.featureLabel}>Foundation</Text>
 
-        <Text style={styles.featureTitle}>
-          🌿 Butterfly Healing Studio
-        </Text>
+        <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
 
         <Text style={styles.featureText}>
           Begin with Rewrite the Scene, a guided imagery rescripting exercise
@@ -81,82 +95,27 @@ export default function DashboardScreen() {
           style={styles.healingButton}
           onPress={() => router.push('/healing-exercises' as any)}
         >
-          <Text style={styles.healingButtonText}>
-            Open Healing Studio
-          </Text>
+          <Text style={styles.healingButtonText}>Open Healing Studio</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.grid}>
-        <HomeButton
-          title="Mood Check"
-          emoji="😊"
-          onPress={() => router.push('/(tabs)/mood' as any)}
-        />
-
-        <HomeButton
-          title="Today’s Word"
-          emoji="📖"
-          onPress={() => router.push('/(tabs)/today-word' as any)}
-        />
-
-        <HomeButton
-          title="Journal"
-          emoji="📝"
-          onPress={() => router.push('/(tabs)/journal' as any)}
-        />
-
-        <HomeButton
-          title="Prayer"
-          emoji="🙏"
-          onPress={() => router.push('/prayer' as any)}
-        />
-
-        <HomeButton
-          title="Garden"
-          emoji="🌸"
-          onPress={() => router.push('/(tabs)/garden' as any)}
-        />
-
-        <HomeButton
-          title="My Transformation"
-          emoji="📸"
-          onPress={() => router.push('/(tabs)/upload-selfie' as any)}
-        />
-
-        <HomeButton
-          title="Testimonials"
-          emoji="🦋"
-          onPress={() => router.push('/(tabs)/testimonials' as any)}
-        />
-
-        <HomeButton
-          title="Accountability"
-          emoji="🤝"
-          onPress={() => router.push('/(tabs)/accountability' as any)}
-        />
-
-        <HomeButton
-          title="Celebrate"
-          emoji="🎉"
-          onPress={() => router.push('/(tabs)/celebrate' as any)}
-        />
-
-        <HomeButton
-          title="Emergency Help"
-          emoji="💙"
-          onPress={() => router.push('/emergency' as any)}
-        />
+        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
+        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
+        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
+        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
+        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
+        <HomeButton title="My Transformation" emoji="📸" onPress={() => router.push('/(tabs)/upload-selfie' as any)} />
+        <HomeButton title="Testimonials" emoji="🦋" onPress={() => router.push('/(tabs)/testimonials' as any)} />
+        <HomeButton title="Accountability" emoji="🤝" onPress={() => router.push('/(tabs)/accountability' as any)} />
+        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
+        <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/emergency' as any)} />
       </View>
 
       <View style={styles.progressCard}>
-        <Text style={styles.sectionTitle}>
-          Butterfly Progress
-        </Text>
+        <Text style={styles.sectionTitle}>Butterfly Progress</Text>
 
-        <Text style={styles.progressStage}>
-          🌱 Your Garden Is Growing
-        </Text>
+        <Text style={styles.progressStage}>🌱 Your Garden Is Growing</Text>
 
         <Text style={styles.progressText}>
           Every prayer, journal entry, mood check, scripture, and healing
@@ -167,16 +126,12 @@ export default function DashboardScreen() {
           style={styles.gardenButton}
           onPress={() => router.push('/(tabs)/garden' as any)}
         >
-          <Text style={styles.gardenButtonText}>
-            View My Butterfly Garden
-          </Text>
+          <Text style={styles.gardenButtonText}>View My Butterfly Garden</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutButtonText}>
-          Sign Out
-        </Text>
+        <Text style={styles.signOutButtonText}>Sign Out</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -200,20 +155,14 @@ function HomeButton({
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
-  },
+  screen: { flex: 1, backgroundColor: '#FFF9F3' },
   content: {
     paddingHorizontal: 22,
     paddingTop: 55,
     paddingBottom: 130,
     alignItems: 'center',
   },
-  butterfly: {
-    fontSize: 56,
-    marginBottom: 10,
-  },
+  butterfly: { fontSize: 56, marginBottom: 10 },
   title: {
     color: '#4B1D7A',
     fontSize: 32,
@@ -228,6 +177,19 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 18,
   },
+  adminButton: {
+    backgroundColor: '#D4AF37',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  adminButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
   emergencyButton: {
     backgroundColor: '#4B1D7A',
     width: '100%',
@@ -236,11 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 18,
   },
-  emergencyButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+  emergencyButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
   heroCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -270,11 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
   },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '900',
-  },
+  primaryButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
   featureCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -311,11 +265,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
   },
-  healingButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+  healingButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
   grid: {
     width: '100%',
     flexDirection: 'row',
@@ -334,10 +284,7 @@ const styles = StyleSheet.create({
     borderColor: '#F1D7A7',
     marginBottom: 12,
   },
-  homeEmoji: {
-    fontSize: 30,
-    marginBottom: 8,
-  },
+  homeEmoji: { fontSize: 30, marginBottom: 8 },
   homeButtonText: {
     color: '#4B1D7A',
     fontSize: 15,
@@ -380,11 +327,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
   },
-  gardenButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+  gardenButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
   signOutButton: {
     borderColor: '#4B1D7A',
     borderWidth: 2,
@@ -393,9 +336,5 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
   },
-  signOutButtonText: {
-    color: '#4B1D7A',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+  signOutButtonText: { color: '#4B1D7A', fontSize: 16, fontWeight: '900' },
 });

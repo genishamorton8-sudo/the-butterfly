@@ -14,7 +14,9 @@ export default function AdminDashboard() {
 
       <Text style={styles.title}>Butterfly Admin</Text>
 
-      <Text style={styles.subtitle}>Sankofa partner management</Text>
+      <Text style={styles.subtitle}>
+        Sankofa Partner Administration
+      </Text>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Admin Tools</Text>
@@ -26,73 +28,91 @@ export default function AdminDashboard() {
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>🤝 Assign Partners</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>📊 Partner Statistics</Text>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => router.replace('/(tabs)/dashboard' as any)}
       >
-        <Text style={styles.backButtonText}>Back to Dashboard</Text>
+        <Text style={styles.backButtonText}>
+          Back to Dashboard
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFF9F3' },
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFF9F3',
+  },
   content: {
-    paddingHorizontal: 24,
-    paddingTop: 70,
-    paddingBottom: 120,
+    padding: 24,
+    paddingTop: 60,
     alignItems: 'center',
   },
-  icon: { fontSize: 58, marginBottom: 10 },
+  icon: {
+    fontSize: 60,
+    marginBottom: 10,
+  },
   title: {
-    color: '#4B1D7A',
     fontSize: 34,
     fontWeight: '900',
+    color: '#4B1D7A',
     textAlign: 'center',
   },
   subtitle: {
-    color: '#E75480',
     fontSize: 18,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginTop: 10,
+    color: '#E75480',
+    fontWeight: '700',
+    marginTop: 8,
     marginBottom: 24,
+    textAlign: 'center',
   },
   card: {
-    backgroundColor: '#FFFFFF',
     width: '100%',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,
     borderWidth: 2,
     borderColor: '#D4AF37',
-    marginBottom: 18,
+    marginBottom: 24,
   },
   cardTitle: {
-    color: '#4B1D7A',
     fontSize: 22,
     fontWeight: '900',
+    color: '#4B1D7A',
     textAlign: 'center',
-    marginBottom: 18,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#4B1D7A',
-    width: '100%',
-    paddingVertical: 17,
+    paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
     marginBottom: 14,
   },
-  buttonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '900' },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '900',
+  },
   backButton: {
-    borderColor: '#4B1D7A',
-    borderWidth: 2,
     width: '100%',
-    paddingVertical: 16,
+    borderWidth: 2,
+    borderColor: '#4B1D7A',
     borderRadius: 30,
+    paddingVertical: 16,
     alignItems: 'center',
   },
-  backButtonText: { color: '#4B1D7A', fontSize: 16, fontWeight: '900' },
+  backButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
 });
