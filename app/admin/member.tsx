@@ -1,5 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
     ScrollView,
     StyleSheet,
     Text,
@@ -7,28 +10,84 @@ import {
     View,
 } from 'react-native';
 
+import { db } from '../../lib/firebase';
+import { PartnerProfile } from '../../lib/partners';
+
 export default function MemberProfileScreen() {
   const params = useLocalSearchParams();
+  const uid = String(params.uid || '');
 
-  const name = String(params.name || 'Butterfly Member');
-  const email = String(params.email || 'No email available');
-  const role = String(params.role || 'member');
-  const partner = String(params.partner || 'Not Assigned');
-  const code = String(params.code || 'No Code');
+  const [member, setMember] = useState<PartnerProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadMember();
+  }, []);
+
+  async function loadMember() {
+    try {
+      if (!uid) {
+        setMember(null);
+        return;
+      }
+
+      const userRef = doc(db, 'users', uid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        setMember(snap.data() as PartnerProfile);
+      } else {
+        setMember(null);
+      }
+    } catch {
+      setMember(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingScreen}>
+        <ActivityIndicator size="large" color="#E75480" />
+      </View>
+    );
+  }
+
+  if (!member) {
+    return (
+      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+        <Text style={styles.icon}>👤</Text>
+        <Text style={styles.title}>Member Not Found</Text>
+
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.replace('/admin/members' as any)}
+        >
+          <Text style={styles.backButtonText}>Back to Members</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.icon}>👤</Text>
 
-      <Text style={styles.title}>{name}</Text>
+      <Text style={styles.title}>
+        {member.displayName || 'Butterfly Member'}
+      </Text>
 
       <Text style={styles.subtitle}>Member Profile</Text>
 
       <View style={styles.card}>
-        <InfoRow label="Email" value={email} />
-        <InfoRow label="Role" value={role} />
-        <InfoRow label="Partner" value={partner} />
-        <InfoRow label="Partner Code" value={code} />
+        <InfoRow label="Email" value={member.email || 'No email'} />
+        <InfoRow label="Role" value={member.role || 'member'} />
+        <InfoRow
+          label="Partner"
+          value={member.partnerUid ? 'Assigned' : 'Not Assigned'}
+        />
+        <InfoRow label="Partner Code" value={member.partnerCode || 'No Code'} />
         <InfoRow label="Garden Stage" value="🌱 Growing" />
         <InfoRow label="Healing Streak" value="Coming Soon" />
       </View>
@@ -36,7 +95,15 @@ export default function MemberProfileScreen() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Admin Actions</Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            router.push({
+              pathname: '/admin/assign-partner',
+              params: { uid: member.uid },
+            } as any)
+          }
+        >
           <Text style={styles.buttonText}>🤝 Assign Partner</Text>
         </TouchableOpacity>
 
@@ -69,6 +136,12 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: '#FFF9F3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   screen: {
     flex: 1,
     backgroundColor: '#FFF9F3',
@@ -152,4 +225,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '900',
   },
-});
+}); 

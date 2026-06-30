@@ -27,6 +27,7 @@ export default function MembersScreen() {
     try {
       const usersRef = collection(db, 'users');
       const q = query(usersRef, orderBy('email'));
+
       const snapshot = await getDocs(q);
 
       const userList = snapshot.docs.map((docSnap) => {
@@ -42,12 +43,17 @@ export default function MembersScreen() {
   }
 
   const filteredMembers = members.filter((member) => {
-    const text = `${member.displayName} ${member.email}`.toLowerCase();
+    const text =
+      `${member.displayName} ${member.email}`.toLowerCase();
+
     return text.includes(search.toLowerCase());
   });
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+    >
       <Text style={styles.icon}>👥</Text>
 
       <Text style={styles.title}>Members</Text>
@@ -65,35 +71,50 @@ export default function MembersScreen() {
       />
 
       {loading ? (
-        <ActivityIndicator size="large" color="#E75480" />
+        <ActivityIndicator
+          size="large"
+          color="#E75480"
+        />
       ) : filteredMembers.length === 0 ? (
         <View style={styles.memberCard}>
-          <Text style={styles.emptyText}>No members found yet.</Text>
+          <Text style={styles.emptyText}>
+            No members found yet.
+          </Text>
         </View>
       ) : (
         filteredMembers.map((member) => (
-          <View key={member.uid} style={styles.memberCard}>
+          <View
+            key={member.uid}
+            style={styles.memberCard}
+          >
             <Text style={styles.memberName}>
               {member.displayName || 'Butterfly Member'}
             </Text>
 
-            <Text style={styles.memberEmail}>{member.email}</Text>
+            <Text style={styles.memberEmail}>
+              {member.email}
+            </Text>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Role:</Text>
-              <Text style={styles.infoValue}>{member.role}</Text>
-            </View>
+              <Text style={styles.infoLabel}>
+                Role:
+              </Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Partner:</Text>
               <Text style={styles.infoValue}>
-                {member.partnerUid ? 'Assigned' : 'Not Assigned'}
+                {member.role}
               </Text>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Code:</Text>
-              <Text style={styles.infoValue}>{member.partnerCode}</Text>
+              <Text style={styles.infoLabel}>
+                Partner:
+              </Text>
+
+              <Text style={styles.infoValue}>
+                {member.partnerUid
+                  ? 'Assigned'
+                  : 'Not Assigned'}
+              </Text>
             </View>
 
             <TouchableOpacity
@@ -102,16 +123,14 @@ export default function MembersScreen() {
                 router.push({
                   pathname: '/admin/member',
                   params: {
-                    name: member.displayName || 'Butterfly Member',
-                    email: member.email,
-                    role: member.role,
-                    partner: member.partnerUid ? 'Assigned' : 'Not Assigned',
-                    code: member.partnerCode,
+                    uid: member.uid,
                   },
                 } as any)
               }
             >
-              <Text style={styles.smallButtonText}>View Profile</Text>
+              <Text style={styles.smallButtonText}>
+                View Profile
+              </Text>
             </TouchableOpacity>
           </View>
         ))
@@ -119,9 +138,13 @@ export default function MembersScreen() {
 
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => router.replace('/admin' as any)}
+        onPress={() =>
+          router.replace('/admin' as any)
+        }
       >
-        <Text style={styles.backButtonText}>Back to Admin</Text>
+        <Text style={styles.backButtonText}>
+          Back to Admin
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -132,22 +155,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF9F3',
   },
+
   content: {
     padding: 24,
     paddingTop: 60,
     paddingBottom: 120,
     alignItems: 'center',
   },
+
   icon: {
     fontSize: 56,
     marginBottom: 10,
   },
+
   title: {
     fontSize: 34,
     fontWeight: '900',
     color: '#4B1D7A',
     textAlign: 'center',
   },
+
   subtitle: {
     fontSize: 17,
     color: '#E75480',
@@ -157,6 +184,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
   },
+
   searchInput: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -168,6 +196,7 @@ const styles = StyleSheet.create({
     color: '#3F2A4D',
     marginBottom: 20,
   },
+
   memberCard: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -177,6 +206,7 @@ const styles = StyleSheet.create({
     borderColor: '#D4AF37',
     marginBottom: 16,
   },
+
   memberName: {
     fontSize: 22,
     fontWeight: '900',
@@ -184,33 +214,39 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 6,
   },
+
   memberEmail: {
     fontSize: 15,
     color: '#3F2A4D',
     textAlign: 'center',
     marginBottom: 16,
   },
+
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+
   infoLabel: {
     fontSize: 16,
     color: '#4B1D7A',
     fontWeight: '900',
   },
+
   infoValue: {
     fontSize: 16,
     color: '#3F2A4D',
     fontWeight: '700',
   },
+
   emptyText: {
     color: '#3F2A4D',
     fontSize: 17,
     fontWeight: '800',
     textAlign: 'center',
   },
+
   smallButton: {
     backgroundColor: '#4B1D7A',
     borderRadius: 24,
@@ -218,11 +254,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+
   smallButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
   },
+
   backButton: {
     width: '100%',
     borderWidth: 2,
@@ -232,6 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+
   backButtonText: {
     color: '#4B1D7A',
     fontSize: 16,
