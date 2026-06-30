@@ -95,22 +95,59 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="emergency"
-        options={{
-          title: 'Help',
-          tabBarIcon: () => <Text style={{ fontSize: 18, fontWeight: '900' }}>SOS</Text>,
-        }}
+        name="daily-journey"
+        options={{ href: null }}
       />
 
-      <Tabs.Screen name="daily-journey" options={{ href: null }} />
-      <Tabs.Screen name="journey" options={{ href: null }} />
-      <Tabs.Screen name="mood" options={{ href: null }} />
-      <Tabs.Screen name="mood-response" options={{ href: null }} />
-      <Tabs.Screen name="egg-activity" options={{ href: null }} />
-      <Tabs.Screen name="celebrate" options={{ href: null }} />
-      <Tabs.Screen name="upload-selfie" options={{ href: null }} />
-      <Tabs.Screen name="accountability" options={{ href: null }} />
-      <Tabs.Screen name="index" options={{ href: null }} />
+      <Tabs.Screen
+        name="journey"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="mood"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="mood-response"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="egg-activity"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="celebrate"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="upload-selfie"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="accountability"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="connect-partner"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="healing-exercises"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
+        name="index"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }
