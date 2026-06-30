@@ -21,7 +21,10 @@ export default function AdminDashboard() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Admin Tools</Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push('/admin/members' as any)}
+        >
           <Text style={styles.buttonText}>👥 View Members</Text>
         </TouchableOpacity>
 
