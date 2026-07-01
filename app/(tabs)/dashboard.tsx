@@ -172,6 +172,22 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.featureCard}>
+        <Text style={styles.featureLabel}>Beta Tools</Text>
+        <Text style={styles.featureTitle}>🦋 Beta Center</Text>
+
+        <Text style={styles.featureText}>
+          Report bugs, suggest features, and help shape The Butterfly before public launch.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.betaButton}
+          onPress={() => router.push('/(tabs)/beta-center' as any)}
+        >
+          <Text style={styles.betaButtonText}>Open Beta Center</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.featureCard}>
         <Text style={styles.featureLabel}>Foundation</Text>
         <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
 
@@ -190,7 +206,9 @@ export default function DashboardScreen() {
 
       <View style={styles.grid}>
         <HomeButton title="Application" emoji="🦋" onPress={() => router.push('/(tabs)/application' as any)} />
+        <HomeButton title="Beta Center" emoji="🦋" onPress={() => router.push('/(tabs)/beta-center' as any)} />
         <HomeButton title="Bug Report" emoji="🐞" onPress={() => router.push('/(tabs)/bug-report' as any)} />
+        <HomeButton title="Feature Request" emoji="💡" onPress={() => router.push('/(tabs)/feature-request' as any)} />
         <HomeButton title="Profile" emoji="👤" onPress={() => router.push('/(tabs)/profile' as any)} />
         <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
         <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
@@ -448,6 +466,17 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     textAlign: 'center',
     marginBottom: 16,
+  },
+  betaButton: {
+    backgroundColor: '#E75480',
+    paddingVertical: 15,
+    borderRadius: 28,
+    alignItems: 'center',
+  },
+  betaButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
   },
   healingButton: {
     backgroundColor: '#4B1D7A',
