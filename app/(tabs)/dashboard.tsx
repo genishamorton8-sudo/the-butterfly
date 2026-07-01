@@ -3,24 +3,41 @@ import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 import { auth, db } from '../../lib/firebase';
 import {
-  createOrUpdateMyPartnerProfile,
-  getMyPartnerProfile,
-  PartnerProfile,
+    createOrUpdateMyPartnerProfile,
+    getMyPartnerProfile,
+    PartnerProfile,
 } from '../../lib/partners';
+
+function getSkinToneEmoji(tone?: string) {
+  switch (tone) {
+    case 'light':
+      return '🖐🏻';
+    case 'mediumLight':
+      return '🖐🏼';
+    case 'medium':
+      return '🖐🏽';
+    case 'mediumDark':
+      return '🖐🏾';
+    case 'dark':
+      return '🖐🏿';
+    default:
+      return '🖐';
+  }
+}
 
 export default function DashboardScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [myProfile, setMyProfile] = useState<PartnerProfile | null>(null);
+  const [skinToneEmoji, setSkinToneEmoji] = useState('🖐');
   const [butterflyPartner, setButterflyPartner] =
     useState<PartnerProfile | null>(null);
 
@@ -32,7 +49,8 @@ export default function DashboardScreen() {
     await createOrUpdateMyPartnerProfile();
 
     const profile = await getMyPartnerProfile();
-    setMyProfile(profile);
+
+    setSkinToneEmoji(getSkinToneEmoji(profile?.emojiSkinTone));
 
     if (profile?.role === 'admin') {
       setIsAdmin(true);
@@ -83,7 +101,6 @@ export default function DashboardScreen() {
 
       <View style={styles.partnerCard}>
         <Text style={styles.partnerLabel}>Butterfly Connection</Text>
-
         <Text style={styles.partnerTitle}>🦋 My Butterfly Partner</Text>
 
         {butterflyPartner ? (
@@ -96,15 +113,13 @@ export default function DashboardScreen() {
               You are connected for encouragement, prayer, and growth.
             </Text>
 
-            <View style={styles.partnerActions}>
-              <TouchableOpacity style={styles.partnerActionButton}>
-                <Text style={styles.partnerActionText}>💬 Encourage</Text>
-              </TouchableOpacity>
+            <TouchableOpacity style={styles.partnerActionButton}>
+              <Text style={styles.partnerActionText}>💬 Encourage</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity style={styles.partnerActionButton}>
-                <Text style={styles.partnerActionText}>🙏 Pray Together</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={styles.partnerActionButton}>
+              <Text style={styles.partnerActionText}>🙏 Pray Together</Text>
+            </TouchableOpacity>
           </>
         ) : (
           <>
@@ -125,7 +140,8 @@ export default function DashboardScreen() {
           </>
         )}
       </View>
-            <View style={styles.heroCard}>
+
+      <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
 
         <Text style={styles.heroText}>
@@ -142,7 +158,6 @@ export default function DashboardScreen() {
 
       <View style={styles.featureCard}>
         <Text style={styles.featureLabel}>Foundation</Text>
-
         <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
 
         <Text style={styles.featureText}>
@@ -159,6 +174,7 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.grid}>
+        <HomeButton title="Profile" emoji="👤" onPress={() => router.push('/(tabs)/profile' as any)} />
         <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
         <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
         <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
@@ -168,12 +184,12 @@ export default function DashboardScreen() {
         <HomeButton title="Testimonials" emoji="🦋" onPress={() => router.push('/(tabs)/testimonials' as any)} />
         <HomeButton title="Butterfly Partners" emoji="🤝" onPress={() => router.push('/(tabs)/accountability' as any)} />
         <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
+        <HomeButton title="Skin Tone" emoji={skinToneEmoji} onPress={() => router.push('/(tabs)/skin-tone' as any)} />
         <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/emergency' as any)} />
       </View>
 
       <View style={styles.progressCard}>
         <Text style={styles.sectionTitle}>Butterfly Progress</Text>
-
         <Text style={styles.progressStage}>🌱 Your Garden Is Growing</Text>
 
         <Text style={styles.progressText}>
@@ -257,7 +273,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 18,
   },
-  emergencyButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
+  emergencyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
   partnerCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -294,9 +314,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     textAlign: 'center',
     marginBottom: 16,
-  },
-  partnerActions: {
-    width: '100%',
   },
   partnerActionButton: {
     backgroundColor: '#4B1D7A',
@@ -350,7 +367,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
   },
-  primaryButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
+  },
   featureCard: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -387,7 +408,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
   },
-  healingButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
+  healingButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
   grid: {
     width: '100%',
     flexDirection: 'row',
@@ -449,7 +474,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 16,
   },
-  gardenButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
+  gardenButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
   signOutButton: {
     borderColor: '#4B1D7A',
     borderWidth: 2,
@@ -458,5 +487,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
   },
-  signOutButtonText: { color: '#4B1D7A', fontSize: 16, fontWeight: '900' },
+  signOutButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
 });
