@@ -84,13 +84,12 @@ export default function DashboardScreen() {
       <Text style={styles.butterfly}>🦋</Text>
 
       <Text style={styles.title}>Welcome back, friend</Text>
-
       <Text style={styles.subtitle}>Your healing home base.</Text>
 
       {isAdmin && (
         <TouchableOpacity
           style={styles.adminButton}
-          onPress={() => router.push('/admin' as any)}
+          onPress={() => router.push('/admin/index' as any)}
         >
           <Text style={styles.adminButtonText}>🦋 Butterfly Care</Text>
         </TouchableOpacity>
