@@ -3,19 +3,19 @@ import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import { auth, db } from '../../lib/firebase';
 import {
-    createOrUpdateMyPartnerProfile,
-    getMyPartnerProfile,
-    PartnerProfile,
+  createOrUpdateMyPartnerProfile,
+  getMyPartnerProfile,
+  PartnerProfile,
 } from '../../lib/partners';
 
 function getSkinToneEmoji(tone?: string) {
@@ -38,6 +38,8 @@ function getSkinToneEmoji(tone?: string) {
 export default function DashboardScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [skinToneEmoji, setSkinToneEmoji] = useState('🖐');
+  const [betaBadge, setBetaBadge] = useState('');
+  const [betaStatus, setBetaStatus] = useState('');
   const [butterflyPartner, setButterflyPartner] =
     useState<PartnerProfile | null>(null);
 
@@ -51,6 +53,8 @@ export default function DashboardScreen() {
     const profile = await getMyPartnerProfile();
 
     setSkinToneEmoji(getSkinToneEmoji(profile?.emojiSkinTone));
+    setBetaBadge((profile as any)?.betaBadge || '');
+    setBetaStatus((profile as any)?.betaStatus || '');
 
     if (profile?.role === 'admin') {
       setIsAdmin(true);
@@ -98,6 +102,16 @@ export default function DashboardScreen() {
       >
         <Text style={styles.emergencyButtonText}>Need Immediate Support?</Text>
       </TouchableOpacity>
+
+      {betaStatus === 'approved' && (
+        <View style={styles.badgeCard}>
+          <Text style={styles.badgeLabel}>Beta Badge</Text>
+          <Text style={styles.badgeTitle}>🦋 {betaBadge || 'Founding Butterfly'}</Text>
+          <Text style={styles.badgeText}>
+            Welcome home. Your wings are growing.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.partnerCard}>
         <Text style={styles.partnerLabel}>Butterfly Connection</Text>
@@ -174,6 +188,7 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.grid}>
+        <HomeButton title="Application" emoji="🦋" onPress={() => router.push('/(tabs)/application' as any)} />
         <HomeButton title="Profile" emoji="👤" onPress={() => router.push('/(tabs)/profile' as any)} />
         <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
         <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
@@ -277,6 +292,36 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
+  },
+  badgeCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 28,
+    padding: 22,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  badgeLabel: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  badgeTitle: {
+    color: '#4B1D7A',
+    fontSize: 25,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  badgeText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 22,
   },
   partnerCard: {
     backgroundColor: '#FFFFFF',
