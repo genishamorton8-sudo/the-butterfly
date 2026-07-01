@@ -89,7 +89,7 @@ export default function DashboardScreen() {
       {isAdmin && (
         <TouchableOpacity
           style={styles.adminButton}
-          onPress={() => router.push('/admin/index' as any)}
+          onPress={() => router.push('/admin' as any)}
         >
           <Text style={styles.adminButtonText}>🦋 Butterfly Care</Text>
         </TouchableOpacity>
@@ -106,9 +106,7 @@ export default function DashboardScreen() {
         <View style={styles.badgeCard}>
           <Text style={styles.badgeLabel}>Beta Badge</Text>
           <Text style={styles.badgeTitle}>🦋 {betaBadge || 'Founding Butterfly'}</Text>
-          <Text style={styles.badgeText}>
-            Welcome home. Your wings are growing.
-          </Text>
+          <Text style={styles.badgeText}>Welcome home. Your wings are growing.</Text>
         </View>
       )}
 
@@ -121,15 +119,12 @@ export default function DashboardScreen() {
             <Text style={styles.partnerName}>
               {butterflyPartner.displayName || 'Butterfly Partner'}
             </Text>
-
             <Text style={styles.partnerText}>
               You are connected for encouragement, prayer, and growth.
             </Text>
-
             <TouchableOpacity style={styles.partnerActionButton}>
               <Text style={styles.partnerActionText}>💬 Encourage</Text>
             </TouchableOpacity>
-
             <TouchableOpacity style={styles.partnerActionButton}>
               <Text style={styles.partnerActionText}>🙏 Pray Together</Text>
             </TouchableOpacity>
@@ -137,11 +132,9 @@ export default function DashboardScreen() {
         ) : (
           <>
             <Text style={styles.partnerName}>No Butterfly Partner Yet</Text>
-
             <Text style={styles.partnerText}>
               Once you are paired, your Butterfly Partner will appear here.
             </Text>
-
             <TouchableOpacity
               style={styles.partnerRequestButton}
               onPress={() => router.push('/(tabs)/accountability' as any)}
@@ -156,11 +149,7 @@ export default function DashboardScreen() {
 
       <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
-
-        <Text style={styles.heroText}>
-          Start here. One gentle step at a time.
-        </Text>
-
+        <Text style={styles.heroText}>Start here. One gentle step at a time.</Text>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => router.push('/(tabs)/daily-journey' as any)}
@@ -172,12 +161,10 @@ export default function DashboardScreen() {
       <View style={styles.featureCard}>
         <Text style={styles.featureLabel}>Foundation</Text>
         <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
-
         <Text style={styles.featureText}>
           Begin with Rewrite the Scene, a guided imagery rescripting exercise
           for healing painful memories with compassion, protection, truth, and hope.
         </Text>
-
         <TouchableOpacity
           style={styles.healingButton}
           onPress={() => router.push('/healing-exercises' as any)}
@@ -205,12 +192,10 @@ export default function DashboardScreen() {
       <View style={styles.progressCard}>
         <Text style={styles.sectionTitle}>Butterfly Progress</Text>
         <Text style={styles.progressStage}>🌱 Your Garden Is Growing</Text>
-
         <Text style={styles.progressText}>
           Every prayer, journal entry, mood check, scripture, and healing
           exercise helps your Butterfly Garden bloom.
         </Text>
-
         <TouchableOpacity
           style={styles.gardenButton}
           onPress={() => router.push('/(tabs)/garden' as any)}
