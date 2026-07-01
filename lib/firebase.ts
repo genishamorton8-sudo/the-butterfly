@@ -2,9 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
 import {
   getAuth,
-  getReactNativePersistence,
   initializeAuth,
+  type Auth,
 } from 'firebase/auth';
+// @ts-ignore Firebase React Native persistence exists at runtime, but TypeScript may not see it.
+import { getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -18,7 +20,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-let auth;
+let auth: Auth;
 
 try {
   auth = initializeAuth(app, {

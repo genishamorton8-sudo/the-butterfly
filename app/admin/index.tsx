@@ -1,50 +1,58 @@
 import { router } from 'expo-router';
-import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-export default function AdminDashboard() {
+function AdminCard({
+  title,
+  subtitle,
+  emoji,
+  onPress,
+}: {
+  title: string;
+  subtitle: string;
+  emoji: string;
+  onPress: () => void;
+}) {
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.icon}>🦋</Text>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Text style={styles.emoji}>{emoji}</Text>
+      <Text style={styles.cardTitle}>{title}</Text>
+      <Text style={styles.cardSubtitle}>{subtitle}</Text>
+    </TouchableOpacity>
+  );
+}
 
-      <Text style={styles.title}>Butterfly Admin</Text>
+export default function AdminHome() {
+  return (
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={styles.title}>🦋 Butterfly Care</Text>
 
       <Text style={styles.subtitle}>
-        Sankofa Partner Administration
+        Welcome to your administrative dashboard.
       </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Admin Tools</Text>
+      <AdminCard
+        emoji="👥"
+        title="Members"
+        subtitle="View and manage community members."
+        onPress={() => router.push('/admin/members')}
+      />
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push('/admin/members' as any)}
-        >
-          <Text style={styles.buttonText}>👥 View Members</Text>
-        </TouchableOpacity>
+      <AdminCard
+        emoji="🤝"
+        title="Assign Butterfly Partner"
+        subtitle="Match members with prayer partners."
+        onPress={() => router.push('/admin/assign-partner')}
+      />
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>🤝 Assign Partners</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>📊 Partner Statistics</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.replace('/(tabs)/dashboard' as any)}
-      >
-        <Text style={styles.backButtonText}>
-          Back to Dashboard
-        </Text>
-      </TouchableOpacity>
+      <AdminCard
+        emoji="🦋"
+        title="Founding Butterflies"
+        subtitle="Review and approve beta applications."
+        onPress={() => router.push('/admin/founding-butterflies')}
+      />
     </ScrollView>
   );
 }
@@ -57,65 +65,46 @@ const styles = StyleSheet.create({
   content: {
     padding: 24,
     paddingTop: 60,
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 60,
-    marginBottom: 10,
+    paddingBottom: 100,
   },
   title: {
     fontSize: 34,
     fontWeight: '900',
     color: '#4B1D7A',
     textAlign: 'center',
+    marginBottom: 10,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#E75480',
-    fontWeight: '700',
-    marginTop: 8,
-    marginBottom: 24,
     textAlign: 'center',
+    marginBottom: 30,
+    fontWeight: '700',
   },
   card: {
-    width: '100%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: '#D4AF37',
-    marginBottom: 24,
+    padding: 20,
+    marginBottom: 18,
+    alignItems: 'center',
+  },
+  emoji: {
+    fontSize: 42,
+    marginBottom: 10,
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
     color: '#4B1D7A',
+    marginBottom: 6,
     textAlign: 'center',
-    marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#4B1D7A',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  backButton: {
-    width: '100%',
-    borderWidth: 2,
-    borderColor: '#4B1D7A',
-    borderRadius: 30,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  backButtonText: {
-    color: '#4B1D7A',
-    fontSize: 16,
-    fontWeight: '900',
+  cardSubtitle: {
+    fontSize: 15,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
