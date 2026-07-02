@@ -1,18 +1,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
+import { addJournalEntry } from '../../lib/journal';
+import { completeExercise } from '../../lib/progress';
 
 export default function MeetYoungerMeScreen() {
   const [step, setStep] = useState(1);
@@ -24,7 +27,7 @@ export default function MeetYoungerMeScreen() {
 
   const totalSteps = 5;
 
-  function next() {
+  async function next() {
     Keyboard.dismiss();
 
     if (step < totalSteps) {
@@ -32,9 +35,26 @@ export default function MeetYoungerMeScreen() {
       return;
     }
 
+    await addJournalEntry({
+      id: Date.now().toString(),
+      title: 'Meet Younger Me Reflection',
+      exercise: 'Meet Younger Me',
+      date: new Date().toISOString(),
+      preview: promise || message || needed || 'You showed kindness to younger you.',
+      answers: {
+        age,
+        feeling,
+        needed,
+        message,
+        promise,
+      },
+    });
+
+    await completeExercise('Meet Younger Me');
+
     Alert.alert(
       'Beautiful work',
-      'You showed kindness to younger you today.'
+      'This reflection has been saved to your Healing Journal.'
     );
   }
 

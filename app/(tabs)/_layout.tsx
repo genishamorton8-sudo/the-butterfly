@@ -70,8 +70,10 @@ export default function TabLayout() {
         }}
       />
 
+      <Tabs.Screen name="journal" options={{ href: null }} />
+
       <Tabs.Screen
-        name="journal"
+        name="healing-journal"
         options={{
           title: 'Journal',
           tabBarIcon: () => <Text style={{ fontSize: 22 }}>📝</Text>,
@@ -112,7 +114,6 @@ export default function TabLayout() {
       <Tabs.Screen name="mirror-truth" options={{ href: null }} />
       <Tabs.Screen name="letters-never-sent" options={{ href: null }} />
       <Tabs.Screen name="future-self" options={{ href: null }} />
-      <Tabs.Screen name="healing-journal" options={{ href: null }} />
 
       <Tabs.Screen name="index" options={{ href: null }} />
     </Tabs>
