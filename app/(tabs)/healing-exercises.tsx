@@ -1,269 +1,228 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-export default function HealingExercisesScreen() {
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.icon}>🌿</Text>
+export default function ChangeTheThoughtScreen() {
+  const [situation, setSituation] = useState('');
+  const [thought, setThought] = useState('');
+  const [truth, setTruth] = useState('');
 
-      <Text style={styles.title}>Butterfly Healing Studio</Text>
+  function continueJourney() {
+    Alert.alert(
+      'Beautiful.',
+      'You just took one Butterfly step. More guidance and journaling will be added here.'
+    );
+  }
+
+  return (
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={styles.icon}>🧠</Text>
+
+      <Text style={styles.title}>Change the Thought</Text>
 
       <Text style={styles.subtitle}>
-        Start gently. Imagery rescripting is the foundation of this healing space.
+        Sometimes our first thought isn't our truest thought.
+        Let's walk through it together.
       </Text>
 
-      <View style={styles.featureCard}>
-        <Text style={styles.featureLabel}>Foundation Exercise</Text>
-        <Text style={styles.featureTitle}>🌅 Rewrite the Scene</Text>
-        <Text style={styles.featureText}>
-          Revisit a painful memory with compassion, protection, truth, and hope.
-          This guided practice helps you imagine what you needed then and carry
-          a new meaning now.
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          What happened?
         </Text>
 
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push('/rewrite-scene' as any)}
-        >
-          <Text style={styles.primaryButtonText}>Begin Rewrite the Scene</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionTitle}>Healing Tools</Text>
-
-      <View style={styles.grid}>
-        <ToolCard
-          title="Change the Thought"
-          emoji="🧠"
-          text="Cognitive restructuring for painful thoughts."
-        />
-
-        <ToolCard
-          title="Meet Younger Me"
-          emoji="👧"
-          text="Comfort the part of you that needed care."
-        />
-
-        <ToolCard
-          title="Letters Never Sent"
-          emoji="💌"
-          text="Release words you never got to say."
-        />
-
-        <ToolCard
-          title="Mirror Truth"
-          emoji="🪞"
-          text="Replace lies with truth and compassion."
-        />
-
-        <ToolCard
-          title="Safe Place"
-          emoji="🏡"
-          text="Imagine a place where your nervous system can rest."
-        />
-
-        <ToolCard
-          title="Future Self"
-          emoji="🌸"
-          text="Picture the healed version of you walking forward."
+        <TextInput
+          style={styles.input}
+          multiline
+          placeholder="Tell me what happened..."
+          value={situation}
+          onChangeText={setSituation}
         />
       </View>
 
-      <View style={styles.safetyCard}>
-        <Text style={styles.safetyTitle}>Gentle Reminder</Text>
-        <Text style={styles.safetyText}>
-          If an exercise feels too heavy, pause. You can pray, breathe, journal,
-          return later, or reach out for support. Healing does not have to be rushed.
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          What thought hurt the most?
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          multiline
+          placeholder="Write the thought here..."
+          value={thought}
+          onChangeText={setThought}
+        />
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          What would God lovingly remind you?
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          multiline
+          placeholder="Write a healthier truth..."
+          value={truth}
+          onChangeText={setTruth}
+        />
+      </View>
+
+      <View style={styles.scriptureCard}>
+        <Text style={styles.scriptureTitle}>
+          Truth for Today
+        </Text>
+
+        <Text style={styles.scripture}>
+          "Be transformed by the renewing of your mind."
+        </Text>
+
+        <Text style={styles.reference}>
+          Romans 12:2
         </Text>
       </View>
 
       <TouchableOpacity
-        style={styles.secondaryButton}
-        onPress={() => router.replace('/(tabs)/dashboard' as any)}
+        style={styles.button}
+        onPress={continueJourney}
       >
-        <Text style={styles.secondaryButtonText}>Back to Dashboard</Text>
+        <Text style={styles.buttonText}>
+          Continue
+        </Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.back}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.backText}>
+          Back
+        </Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 }
 
-function ToolCard({
-  title,
-  emoji,
-  text,
-}: {
-  title: string;
-  emoji: string;
-  text: string;
-}) {
-  return (
-    <View style={styles.toolCard}>
-      <Text style={styles.toolEmoji}>{emoji}</Text>
-      <Text style={styles.toolTitle}>{title}</Text>
-      <Text style={styles.toolText}>{text}</Text>
-      <Text style={styles.comingSoon}>Coming soon</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
+  screen:{
+    flex:1,
+    backgroundColor:'#FFF9F3'
   },
-  content: {
-    paddingHorizontal: 24,
-    paddingTop: 70,
-    paddingBottom: 120,
-    alignItems: 'center',
+
+  content:{
+    padding:24,
+    paddingTop:70,
+    paddingBottom:120
   },
-  icon: {
-    fontSize: 58,
-    marginBottom: 10,
+
+  icon:{
+    fontSize:56,
+    textAlign:'center'
   },
-  title: {
-    color: '#4B1D7A',
-    fontSize: 33,
-    fontWeight: '900',
-    textAlign: 'center',
+
+  title:{
+    fontSize:32,
+    fontWeight:'900',
+    color:'#4B1D7A',
+    textAlign:'center',
+    marginTop:10
   },
-  subtitle: {
-    color: '#3F2A4D',
-    fontSize: 17,
-    lineHeight: 25,
-    textAlign: 'center',
-    marginTop: 10,
-    marginBottom: 24,
+
+  subtitle:{
+    textAlign:'center',
+    fontSize:16,
+    color:'#555',
+    marginVertical:20,
+    lineHeight:24
   },
-  featureCard: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    borderRadius: 26,
-    padding: 22,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-    marginBottom: 24,
+
+  card:{
+    backgroundColor:'#FFF',
+    borderRadius:20,
+    padding:18,
+    marginBottom:18,
+    borderWidth:2,
+    borderColor:'#F1D7A7'
   },
-  featureLabel: {
-    color: '#D4AF37',
-    fontSize: 15,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginBottom: 8,
+
+  label:{
+    fontSize:17,
+    fontWeight:'700',
+    color:'#4B1D7A',
+    marginBottom:10
   },
-  featureTitle: {
-    color: '#4B1D7A',
-    fontSize: 26,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginBottom: 12,
+
+  input:{
+    minHeight:120,
+    textAlignVertical:'top',
+    borderWidth:1,
+    borderColor:'#DDD',
+    borderRadius:12,
+    padding:12,
+    fontSize:16,
+    backgroundColor:'#FFF'
   },
-  featureText: {
-    color: '#3F2A4D',
-    fontSize: 16,
-    lineHeight: 25,
-    textAlign: 'center',
-    marginBottom: 18,
+
+  scriptureCard:{
+    backgroundColor:'#FFFFFF',
+    borderRadius:20,
+    padding:20,
+    borderWidth:2,
+    borderColor:'#D4AF37',
+    marginBottom:20
   },
-  primaryButton: {
-    backgroundColor: '#E75480',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
+
+  scriptureTitle:{
+    fontSize:18,
+    fontWeight:'900',
+    color:'#4B1D7A',
+    marginBottom:10
   },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '900',
-    textAlign: 'center',
+
+  scripture:{
+    fontSize:18,
+    fontStyle:'italic',
+    lineHeight:28,
+    color:'#333'
   },
-  sectionTitle: {
-    color: '#4B1D7A',
-    fontSize: 25,
-    fontWeight: '900',
-    marginBottom: 16,
-    textAlign: 'center',
+
+  reference:{
+    marginTop:10,
+    fontWeight:'700',
+    color:'#4B1D7A'
   },
-  grid: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+
+  button:{
+    backgroundColor:'#E75480',
+    padding:18,
+    borderRadius:30,
+    alignItems:'center'
   },
-  toolCard: {
-    backgroundColor: '#FFFFFF',
-    width: '48%',
-    borderRadius: 22,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: '#F1D7A7',
-    marginBottom: 14,
-    alignItems: 'center',
+
+  buttonText:{
+    color:'#FFF',
+    fontSize:18,
+    fontWeight:'900'
   },
-  toolEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
+
+  back:{
+    marginTop:16,
+    alignItems:'center'
   },
-  toolTitle: {
-    color: '#4B1D7A',
-    fontSize: 16,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  toolText: {
-    color: '#3F2A4D',
-    fontSize: 13,
-    lineHeight: 19,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  comingSoon: {
-    color: '#E75480',
-    fontSize: 12,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-  safetyCard: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: '#F1D7A7',
-    marginTop: 10,
-    marginBottom: 18,
-  },
-  safetyTitle: {
-    color: '#4B1D7A',
-    fontSize: 21,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  safetyText: {
-    color: '#3F2A4D',
-    fontSize: 15,
-    lineHeight: 23,
-    textAlign: 'center',
-  },
-  secondaryButton: {
-    borderColor: '#4B1D7A',
-    borderWidth: 2,
-    width: '100%',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#4B1D7A',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+
+  backText:{
+    color:'#4B1D7A',
+    fontWeight:'700'
+  }
 });

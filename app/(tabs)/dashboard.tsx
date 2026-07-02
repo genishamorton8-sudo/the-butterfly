@@ -160,12 +160,12 @@ export default function DashboardScreen() {
         <Text style={styles.heroTitle}>Today’s Healing Journey</Text>
 
         <Text style={styles.heroText}>
-          Start here. One gentle step at a time.
+          Start with a gentle check-in. Butterfly will help guide your next step.
         </Text>
 
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => router.push('/(tabs)/daily-journey' as any)}
+          onPress={() => router.push('/check-in' as any)}
         >
           <Text style={styles.primaryButtonText}>Begin Today’s Journey</Text>
         </TouchableOpacity>
@@ -205,6 +205,7 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.grid}>
+        <HomeButton title="Daily Check-In" emoji="🦋" onPress={() => router.push('/check-in' as any)} />
         <HomeButton title="Application" emoji="🦋" onPress={() => router.push('/(tabs)/application' as any)} />
         <HomeButton title="Beta Center" emoji="🦋" onPress={() => router.push('/(tabs)/beta-center' as any)} />
         <HomeButton title="Bug Report" emoji="🐞" onPress={() => router.push('/(tabs)/bug-report' as any)} />
