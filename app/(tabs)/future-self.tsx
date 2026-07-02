@@ -1,18 +1,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
+import { addJournalEntry } from '../../lib/journal';
+import { completeExercise } from '../../lib/progress';
 
 export default function FutureSelfScreen() {
   const [step, setStep] = useState(1);
@@ -24,7 +27,7 @@ export default function FutureSelfScreen() {
 
   const totalSteps = 5;
 
-  function next() {
+  async function next() {
     Keyboard.dismiss();
 
     if (step < totalSteps) {
@@ -32,7 +35,27 @@ export default function FutureSelfScreen() {
       return;
     }
 
-    Alert.alert('Hope restored', 'You took one step toward who you are becoming.');
+    await addJournalEntry({
+      id: Date.now().toString(),
+      title: 'Future Self Reflection',
+      exercise: 'Future Self',
+      date: new Date().toISOString(),
+      preview: promise || advice || vision || 'You took one step toward who you are becoming.',
+      answers: {
+        vision,
+        qualities,
+        advice,
+        nextStep,
+        promise,
+      },
+    });
+
+    await completeExercise('Future Self');
+
+    Alert.alert(
+      'Hope restored',
+      'Your Future Self reflection has been saved to your Healing Journal.'
+    );
   }
 
   function back() {
