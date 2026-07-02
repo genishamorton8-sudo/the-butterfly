@@ -94,60 +94,27 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="daily-journey"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="daily-journey" options={{ href: null }} />
+      <Tabs.Screen name="journey" options={{ href: null }} />
+      <Tabs.Screen name="mood" options={{ href: null }} />
+      <Tabs.Screen name="mood-response" options={{ href: null }} />
+      <Tabs.Screen name="egg-activity" options={{ href: null }} />
+      <Tabs.Screen name="celebrate" options={{ href: null }} />
+      <Tabs.Screen name="upload-selfie" options={{ href: null }} />
+      <Tabs.Screen name="accountability" options={{ href: null }} />
+      <Tabs.Screen name="connect-partner" options={{ href: null }} />
 
-      <Tabs.Screen
-        name="journey"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="healing-exercises" options={{ href: null }} />
+      <Tabs.Screen name="change-the-thought" options={{ href: null }} />
+      <Tabs.Screen name="rewrite-scene" options={{ href: null }} />
+      <Tabs.Screen name="meet-younger-me" options={{ href: null }} />
+      <Tabs.Screen name="safe-place" options={{ href: null }} />
+      <Tabs.Screen name="mirror-truth" options={{ href: null }} />
+      <Tabs.Screen name="letters-never-sent" options={{ href: null }} />
+      <Tabs.Screen name="future-self" options={{ href: null }} />
+      <Tabs.Screen name="healing-journal" options={{ href: null }} />
 
-      <Tabs.Screen
-        name="mood"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="mood-response"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="egg-activity"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="celebrate"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="upload-selfie"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="accountability"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="connect-partner"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="healing-exercises"
-        options={{ href: null }}
-      />
-
-      <Tabs.Screen
-        name="index"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="index" options={{ href: null }} />
     </Tabs>
   );
 }
