@@ -1,228 +1,69 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ChangeTheThoughtScreen() {
-  const [situation, setSituation] = useState('');
-  const [thought, setThought] = useState('');
-  const [truth, setTruth] = useState('');
-
-  function continueJourney() {
-    Alert.alert(
-      'Beautiful.',
-      'You just took one Butterfly step. More guidance and journaling will be added here.'
-    );
-  }
-
+export default function HealingExercisesScreen() {
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={styles.icon}>🧠</Text>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <Text style={styles.icon}>🌿</Text>
+      <Text style={styles.title}>Butterfly Healing Studio</Text>
+      <Text style={styles.subtitle}>Choose the healing experience you need today.</Text>
 
-      <Text style={styles.title}>Change the Thought</Text>
-
-      <Text style={styles.subtitle}>
-        Sometimes our first thought isn't our truest thought.
-        Let's walk through it together.
-      </Text>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>
-          What happened?
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          multiline
-          placeholder="Tell me what happened..."
-          value={situation}
-          onChangeText={setSituation}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>
-          What thought hurt the most?
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          multiline
-          placeholder="Write the thought here..."
-          value={thought}
-          onChangeText={setThought}
-        />
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>
-          What would God lovingly remind you?
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          multiline
-          placeholder="Write a healthier truth..."
-          value={truth}
-          onChangeText={setTruth}
-        />
-      </View>
-
-      <View style={styles.scriptureCard}>
-        <Text style={styles.scriptureTitle}>
-          Truth for Today
-        </Text>
-
-        <Text style={styles.scripture}>
-          "Be transformed by the renewing of your mind."
-        </Text>
-
-        <Text style={styles.reference}>
-          Romans 12:2
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={continueJourney}
-      >
-        <Text style={styles.buttonText}>
-          Continue
-        </Text>
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/rewrite-scene' as any)}>
+        <Text style={styles.cardTitle}>🌅 Rewrite the Scene</Text>
+        <Text style={styles.cardText}>Gently revisit a painful memory and rewrite it with safety, compassion, and hope.</Text>
+        <Text style={styles.open}>Open</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.back}
-        onPress={() => router.back()}
-      >
-        <Text style={styles.backText}>
-          Back
-        </Text>
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/change-the-thought' as any)}>
+        <Text style={styles.cardTitle}>🧠 Change the Thought</Text>
+        <Text style={styles.cardText}>Replace painful beliefs with healthier, truthful thoughts.</Text>
+        <Text style={styles.open}>Open</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/meet-younger-me' as any)}>
+        <Text style={styles.cardTitle}>👧 Meet Younger Me</Text>
+        <Text style={styles.cardText}>Comfort and reconnect with the younger version of yourself.</Text>
+        <Text style={styles.open}>Open</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/safe-place' as any)}>
+        <Text style={styles.cardTitle}>🏡 Safe Place</Text>
+        <Text style={styles.cardText}>Create a peaceful inner place you can return to anytime.</Text>
+        <Text style={styles.open}>Open</Text>
+      </TouchableOpacity>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>💌 Letters Never Sent</Text>
+        <Text style={styles.cardText}>Coming Soon</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>🪞 Mirror Truth</Text>
+        <Text style={styles.cardText}>Coming Soon</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>🌸 Future Self</Text>
+        <Text style={styles.cardText}>Coming Soon</Text>
+      </View>
+
+      <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(tabs)/dashboard' as any)}>
+        <Text style={styles.backText}>Back to Dashboard</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen:{
-    flex:1,
-    backgroundColor:'#FFF9F3'
-  },
-
-  content:{
-    padding:24,
-    paddingTop:70,
-    paddingBottom:120
-  },
-
-  icon:{
-    fontSize:56,
-    textAlign:'center'
-  },
-
-  title:{
-    fontSize:32,
-    fontWeight:'900',
-    color:'#4B1D7A',
-    textAlign:'center',
-    marginTop:10
-  },
-
-  subtitle:{
-    textAlign:'center',
-    fontSize:16,
-    color:'#555',
-    marginVertical:20,
-    lineHeight:24
-  },
-
-  card:{
-    backgroundColor:'#FFF',
-    borderRadius:20,
-    padding:18,
-    marginBottom:18,
-    borderWidth:2,
-    borderColor:'#F1D7A7'
-  },
-
-  label:{
-    fontSize:17,
-    fontWeight:'700',
-    color:'#4B1D7A',
-    marginBottom:10
-  },
-
-  input:{
-    minHeight:120,
-    textAlignVertical:'top',
-    borderWidth:1,
-    borderColor:'#DDD',
-    borderRadius:12,
-    padding:12,
-    fontSize:16,
-    backgroundColor:'#FFF'
-  },
-
-  scriptureCard:{
-    backgroundColor:'#FFFFFF',
-    borderRadius:20,
-    padding:20,
-    borderWidth:2,
-    borderColor:'#D4AF37',
-    marginBottom:20
-  },
-
-  scriptureTitle:{
-    fontSize:18,
-    fontWeight:'900',
-    color:'#4B1D7A',
-    marginBottom:10
-  },
-
-  scripture:{
-    fontSize:18,
-    fontStyle:'italic',
-    lineHeight:28,
-    color:'#333'
-  },
-
-  reference:{
-    marginTop:10,
-    fontWeight:'700',
-    color:'#4B1D7A'
-  },
-
-  button:{
-    backgroundColor:'#E75480',
-    padding:18,
-    borderRadius:30,
-    alignItems:'center'
-  },
-
-  buttonText:{
-    color:'#FFF',
-    fontSize:18,
-    fontWeight:'900'
-  },
-
-  back:{
-    marginTop:16,
-    alignItems:'center'
-  },
-
-  backText:{
-    color:'#4B1D7A',
-    fontWeight:'700'
-  }
+  screen: { flex: 1, backgroundColor: '#FFF9F3' },
+  content: { padding: 24, paddingTop: 70, paddingBottom: 120 },
+  icon: { fontSize: 58, textAlign: 'center', marginBottom: 10 },
+  title: { color: '#4B1D7A', fontSize: 32, fontWeight: '900', textAlign: 'center' },
+  subtitle: { color: '#555', fontSize: 16, textAlign: 'center', marginTop: 10, marginBottom: 24, lineHeight: 24 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, borderWidth: 2, borderColor: '#F1D7A7', marginBottom: 16 },
+  cardTitle: { color: '#4B1D7A', fontSize: 21, fontWeight: '900', marginBottom: 8 },
+  cardText: { color: '#3F2A4D', fontSize: 15, lineHeight: 22 },
+  open: { color: '#E75480', fontSize: 14, fontWeight: '900', marginTop: 12 },
+  backButton: { borderColor: '#4B1D7A', borderWidth: 2, padding: 16, borderRadius: 30, alignItems: 'center', marginTop: 10 },
+  backText: { color: '#4B1D7A', fontSize: 16, fontWeight: '900' },
 });
