@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function HealingExercisesScreen() {
   return (
@@ -32,20 +32,23 @@ export default function HealingExercisesScreen() {
         <Text style={styles.open}>Open</Text>
       </TouchableOpacity>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>💌 Letters Never Sent</Text>
-        <Text style={styles.cardText}>Coming Soon</Text>
-      </View>
-
-      <View style={styles.card}>
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/mirror-truth' as any)}>
         <Text style={styles.cardTitle}>🪞 Mirror Truth</Text>
-        <Text style={styles.cardText}>Coming Soon</Text>
-      </View>
+        <Text style={styles.cardText}>Replace lies with truth and speak kindly over yourself.</Text>
+        <Text style={styles.open}>Open</Text>
+      </TouchableOpacity>
 
-      <View style={styles.card}>
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/letters-never-sent' as any)}>
+        <Text style={styles.cardTitle}>💌 Letters Never Sent</Text>
+        <Text style={styles.cardText}>Write the words your heart has been carrying without pressure to send them.</Text>
+        <Text style={styles.open}>Open</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/future-self' as any)}>
         <Text style={styles.cardTitle}>🌸 Future Self</Text>
-        <Text style={styles.cardText}>Coming Soon</Text>
-      </View>
+        <Text style={styles.cardText}>Meet the healed version of you and take one step toward her.</Text>
+        <Text style={styles.open}>Open</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(tabs)/dashboard' as any)}>
         <Text style={styles.backText}>Back to Dashboard</Text>
