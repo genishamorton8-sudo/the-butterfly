@@ -1,18 +1,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
+import { addJournalEntry } from '../../lib/journal';
+import { completeExercise } from '../../lib/progress';
 
 export default function LettersNeverSentScreen() {
   const [step, setStep] = useState(1);
@@ -24,7 +27,7 @@ export default function LettersNeverSentScreen() {
 
   const totalSteps = 5;
 
-  function next() {
+  async function next() {
     Keyboard.dismiss();
 
     if (step < totalSteps) {
@@ -32,7 +35,27 @@ export default function LettersNeverSentScreen() {
       return;
     }
 
-    Alert.alert('Released with care', 'You gave your heart room to speak today.');
+    await addJournalEntry({
+      id: Date.now().toString(),
+      title: 'Letters Never Sent Reflection',
+      exercise: 'Letters Never Sent',
+      date: new Date().toISOString(),
+      preview: truth || release || unsaid || 'You gave your heart room to speak.',
+      answers: {
+        person,
+        unsaid,
+        hurt,
+        release,
+        truth,
+      },
+    });
+
+    await completeExercise('Letters Never Sent');
+
+    Alert.alert(
+      'Released with care',
+      'Your letter has been saved to your Healing Journal.'
+    );
   }
 
   function back() {
