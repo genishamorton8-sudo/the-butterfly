@@ -1,18 +1,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
+import { addJournalEntry } from '../../lib/journal';
+import { completeExercise } from '../../lib/progress';
 
 export default function MirrorTruthScreen() {
   const [step, setStep] = useState(1);
@@ -24,7 +27,7 @@ export default function MirrorTruthScreen() {
 
   const totalSteps = 5;
 
-  function next() {
+  async function next() {
     Keyboard.dismiss();
 
     if (step < totalSteps) {
@@ -32,7 +35,27 @@ export default function MirrorTruthScreen() {
       return;
     }
 
-    Alert.alert('Truth received', 'You replaced a lie with truth today.');
+    await addJournalEntry({
+      id: Date.now().toString(),
+      title: 'Mirror Truth Reflection',
+      exercise: 'Mirror Truth',
+      date: new Date().toISOString(),
+      preview: declaration || truth || lie || 'You replaced a lie with truth.',
+      answers: {
+        lie,
+        source,
+        truth,
+        scripture,
+        declaration,
+      },
+    });
+
+    await completeExercise('Mirror Truth');
+
+    Alert.alert(
+      'Truth received',
+      'Your reflection has been saved to your Healing Journal.'
+    );
   }
 
   function back() {
@@ -56,9 +79,7 @@ export default function MirrorTruthScreen() {
 
           {step === 1 && (
             <Card title="Look With Kindness">
-              <Text style={styles.body}>
-                This is not about criticizing yourself.
-              </Text>
+              <Text style={styles.body}>This is not about criticizing yourself.</Text>
               <Text style={styles.body}>
                 This is about noticing the words you have carried and choosing
                 truth instead.
@@ -69,29 +90,14 @@ export default function MirrorTruthScreen() {
 
           {step === 2 && (
             <Card title="Name the Lie">
-              <Input
-                placeholder="What lie have you been believing about yourself?"
-                value={lie}
-                onChangeText={setLie}
-                multiline
-              />
-              <Input
-                placeholder="Where do you think that lie came from?"
-                value={source}
-                onChangeText={setSource}
-                multiline
-              />
+              <Input placeholder="What lie have you been believing about yourself?" value={lie} onChangeText={setLie} multiline />
+              <Input placeholder="Where do you think that lie came from?" value={source} onChangeText={setSource} multiline />
             </Card>
           )}
 
           {step === 3 && (
             <Card title="Choose the Truth">
-              <Input
-                placeholder="What is the truth instead?"
-                value={truth}
-                onChangeText={setTruth}
-                multiline
-              />
+              <Input placeholder="What is the truth instead?" value={truth} onChangeText={setTruth} multiline />
               <Text style={styles.helper}>
                 Example: I am not rejected. I am loved, seen, and still becoming.
               </Text>
@@ -104,24 +110,13 @@ export default function MirrorTruthScreen() {
                 “I will praise thee; for I am fearfully and wonderfully made.”
               </Text>
               <Text style={styles.reference}>Psalm 139:14</Text>
-
-              <Input
-                placeholder="What scripture or truth do you want to remember?"
-                value={scripture}
-                onChangeText={setScripture}
-                multiline
-              />
+              <Input placeholder="What scripture or truth do you want to remember?" value={scripture} onChangeText={setScripture} multiline />
             </Card>
           )}
 
           {step === 5 && (
             <Card title="Speak It Over Yourself">
-              <Input
-                placeholder="Write your declaration: I am..."
-                value={declaration}
-                onChangeText={setDeclaration}
-                multiline
-              />
+              <Input placeholder="Write your declaration: I am..." value={declaration} onChangeText={setDeclaration} multiline />
               <Text style={styles.quote}>Truth looks good on you.</Text>
             </Card>
           )}
