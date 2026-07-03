@@ -13,6 +13,8 @@ import {
     View,
 } from 'react-native';
 
+import { addJournalEntry } from '../lib/journal';
+
 type Message = {
   id: string;
   sender: 'butterfly' | 'user';
@@ -52,10 +54,31 @@ export default function AICompanionScreen() {
     setInput('');
   }
 
-  function saveReflection() {
+  async function saveReflection() {
+    const conversationText = messages
+      .map((message) =>
+        message.sender === 'user'
+          ? `Me: ${message.text}`
+          : `Butterfly: ${message.text}`
+      )
+      .join('\n\n');
+
+    await addJournalEntry({
+      id: Date.now().toString(),
+      title: 'Butterfly Conversation',
+      exercise: 'Butterfly AI',
+      date: new Date().toISOString(),
+      preview:
+        messages[messages.length - 1]?.text ||
+        'A saved conversation with Butterfly.',
+      answers: {
+        conversation: conversationText,
+      },
+    });
+
     Alert.alert(
-      'Coming Soon',
-      'Soon you will be able to save this conversation to your Healing Journal.'
+      'Saved',
+      'Your conversation with Butterfly has been saved to your Healing Journal.'
     );
   }
 
@@ -146,11 +169,7 @@ export default function AICompanionScreen() {
           }
         />
 
-        <QuickButton
-          icon="content-save"
-          label="Save"
-          onPress={saveReflection}
-        />
+        <QuickButton icon="content-save" label="Save" onPress={saveReflection} />
       </View>
 
       <View style={styles.inputRow}>
@@ -237,10 +256,7 @@ function QuickButton({
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
-  },
+  screen: { flex: 1, backgroundColor: '#FFF9F3' },
   header: {
     paddingTop: 58,
     paddingHorizontal: 18,
@@ -259,13 +275,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerSpacer: {
-    width: 42,
-  },
+  headerCenter: { flex: 1, alignItems: 'center' },
+  headerSpacer: { width: 42 },
   title: {
     color: '#4B1D7A',
     fontSize: 28,
@@ -278,13 +289,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 2,
   },
-  chat: {
-    flex: 1,
-  },
-  chatContent: {
-    padding: 18,
-    paddingBottom: 24,
-  },
+  chat: { flex: 1 },
+  chatContent: { padding: 18, paddingBottom: 24 },
   safetyCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 22,
@@ -318,17 +324,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E75480',
     alignSelf: 'flex-end',
   },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 23,
-  },
-  butterflyText: {
-    color: '#3F2A4D',
-  },
-  userText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
+  messageText: { fontSize: 16, lineHeight: 23 },
+  butterflyText: { color: '#3F2A4D' },
+  userText: { color: '#FFFFFF', fontWeight: '700' },
   quickActions: {
     flexDirection: 'row',
     paddingHorizontal: 12,
