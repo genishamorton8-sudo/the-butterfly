@@ -3,10 +3,17 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-na
 
 import ChatHeader from '../components/butterfly/ChatHeader';
 import ChatInput from '../components/butterfly/ChatInput';
+import MemoryCard from '../components/butterfly/MemoryCard';
 import MessageBubble from '../components/butterfly/MessageBubble';
 import QuickActions from '../components/butterfly/QuickActions';
 
+import {
+    buildWelcomeBackMessage,
+    getButterflyMemory,
+    updateButterflyMemory,
+} from '../lib/butterflyMemory';
 import { createButterflyPrayer, shouldOfferPrayer } from '../lib/butterflyPrayer';
+import { detectEmotion } from '../lib/emotionDetector';
 import { addJournalEntry } from '../lib/journal';
 
 type ExerciseRecommendation = {
@@ -36,6 +43,15 @@ const starterMessages: Message[] = [
 export default function AICompanionScreen() {
   const [messages, setMessages] = useState<Message[]>(starterMessages);
   const [input, setInput] = useState('');
+  const [memoryMessage] = useState(() => {
+    const memory = getButterflyMemory();
+
+    if (memory.conversationCount === 0) {
+      return '';
+    }
+
+    return buildWelcomeBackMessage();
+  });
 
   function sendMessage() {
     const trimmed = input.trim();
@@ -43,7 +59,15 @@ export default function AICompanionScreen() {
     if (!trimmed) return;
 
     const recommendation = getExerciseRecommendation(trimmed);
+    const emotion = detectEmotion(trimmed);
     const offerPrayer = shouldOfferPrayer(trimmed);
+
+    updateButterflyMemory({
+      lastConversation: trimmed,
+      lastEmotion: emotion === 'unknown' ? undefined : emotion,
+      lastExercise: recommendation?.title,
+      lastPrayerTopic: offerPrayer ? trimmed : undefined,
+    });
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -54,7 +78,7 @@ export default function AICompanionScreen() {
     const butterflyReply: Message = {
       id: `${Date.now()}-butterfly`,
       sender: 'butterfly',
-      text: createButterflyReply(trimmed, recommendation, offerPrayer),
+      text: createButterflyReply(trimmed, recommendation, offerPrayer, emotion),
       recommendation,
       shouldOfferPrayer: offerPrayer,
       prayer: offerPrayer ? createButterflyPrayer(trimmed) : undefined,
@@ -67,13 +91,14 @@ export default function AICompanionScreen() {
   function addPrayerToChat(prayer: string) {
     if (!prayer) return;
 
-    const prayerMessage: Message = {
-      id: `${Date.now()}-prayer`,
-      sender: 'butterfly',
-      text: prayer,
-    };
-
-    setMessages((current) => [...current, prayerMessage]);
+    setMessages((current) => [
+      ...current,
+      {
+        id: `${Date.now()}-prayer`,
+        sender: 'butterfly',
+        text: prayer,
+      },
+    ]);
   }
 
   async function saveReflection() {
@@ -101,6 +126,12 @@ export default function AICompanionScreen() {
 
   function calmMe() {
     const prayer = createButterflyPrayer('I feel overwhelmed and need peace.');
+
+    updateButterflyMemory({
+      lastEmotion: 'overwhelmed',
+      lastExercise: 'Safe Place',
+      lastPrayerTopic: 'peace and calm',
+    });
 
     setMessages((current) => [
       ...current,
@@ -140,6 +171,8 @@ export default function AICompanionScreen() {
       <ChatHeader />
 
       <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent}>
+        {memoryMessage ? <MemoryCard message={memoryMessage} /> : null}
+
         {messages.map((message) => (
           <MessageBubble
             key={message.id}
@@ -159,11 +192,7 @@ export default function AICompanionScreen() {
         onSave={saveReflection}
       />
 
-      <ChatInput
-        value={input}
-        onChangeText={setInput}
-        onSend={sendMessage}
-      />
+      <ChatInput value={input} onChangeText={setInput} onSend={sendMessage} />
     </KeyboardAvoidingView>
   );
 }
@@ -297,7 +326,8 @@ function getExerciseRecommendation(text: string): ExerciseRecommendation | undef
 function createButterflyReply(
   text: string,
   recommendation?: ExerciseRecommendation,
-  offerPrayer?: boolean
+  offerPrayer?: boolean,
+  emotion?: string
 ) {
   const lower = text.toLowerCase();
 
@@ -307,15 +337,19 @@ function createButterflyReply(
     lower.includes('anxiety') ||
     lower.includes('overwhelmed')
   ) {
-    if (offerPrayer && recommendation) {
-      return 'That sounds heavy. Let us slow this down together. I also have a gentle exercise and prayer support below.';
-    }
+    return 'That sounds heavy. Let us slow this down together. I have support for your body, your thoughts, and your spirit below.';
+  }
 
-    if (recommendation) {
-      return 'That sounds heavy. Let us slow this down together. I also have a gentle exercise suggestion for you below.';
-    }
+  if (emotion === 'grieving') {
+    return 'I hear grief in what you shared. You do not have to rush your healing. Let us hold this gently together.';
+  }
 
-    return 'That sounds heavy. Let us slow this down together. Put both feet on the floor if you can. Name one thing you can see, one thing you can touch, and one thing your body needs right now.';
+  if (emotion === 'lonely') {
+    return 'Feeling alone can be so heavy. I am here with you in this moment. Let us take this one piece at a time.';
+  }
+
+  if (emotion === 'ashamed') {
+    return 'Shame can make pain feel louder than truth. You are not your worst moment, and you are not beyond healing.';
   }
 
   if (
@@ -342,15 +376,7 @@ function createButterflyReply(
     lower.includes('not enough') ||
     lower.includes('failure')
   ) {
-    if (offerPrayer && recommendation) {
-      return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise and prayer support below.';
-    }
-
-    if (recommendation) {
-      return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise suggestion below that may help.';
-    }
-
-    return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. What would you say to someone you loved if they were carrying that same thought?';
+    return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have support below that may help.';
   }
 
   if (
@@ -370,7 +396,7 @@ function createButterflyReply(
   }
 
   if (recommendation) {
-    return 'Thank you for trusting me with that. I hear something important underneath what you shared, and I have a gentle exercise suggestion that may help.';
+    return 'Thank you for trusting me with that. I have a gentle exercise suggestion that may help.';
   }
 
   if (offerPrayer) {
