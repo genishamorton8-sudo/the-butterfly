@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-na
 
 import ChatHeader from '../components/butterfly/ChatHeader';
 import ChatInput from '../components/butterfly/ChatInput';
+import HealingFocusCard from '../components/butterfly/HealingFocusCard';
 import MemoryCard from '../components/butterfly/MemoryCard';
 import MessageBubble from '../components/butterfly/MessageBubble';
 import QuickActions from '../components/butterfly/QuickActions';
@@ -15,6 +16,7 @@ import {
 import { createButterflyPrayer, shouldOfferPrayer } from '../lib/butterflyPrayer';
 import { detectEmotion } from '../lib/emotionDetector';
 import { addJournalEntry } from '../lib/journal';
+import { detectHealingWound, getHealingFocus } from '../lib/woundDetector';
 
 type ExerciseRecommendation = {
   title: string;
@@ -32,6 +34,11 @@ type Message = {
   shouldOfferPrayer?: boolean;
 };
 
+type HealingFocus = {
+  title: string;
+  encouragement: string;
+};
+
 const starterMessages: Message[] = [
   {
     id: '1',
@@ -43,14 +50,14 @@ const starterMessages: Message[] = [
 export default function AICompanionScreen() {
   const [messages, setMessages] = useState<Message[]>(starterMessages);
   const [input, setInput] = useState('');
+  const [healingFocus, setHealingFocus] = useState<HealingFocus>({
+    title: '',
+    encouragement: '',
+  });
+
   const [memoryMessage] = useState(() => {
     const memory = getButterflyMemory();
-
-    if (memory.conversationCount === 0) {
-      return '';
-    }
-
-    return buildWelcomeBackMessage();
+    return memory.conversationCount === 0 ? '' : buildWelcomeBackMessage();
   });
 
   function sendMessage() {
@@ -60,7 +67,11 @@ export default function AICompanionScreen() {
 
     const recommendation = getExerciseRecommendation(trimmed);
     const emotion = detectEmotion(trimmed);
+    const wound = detectHealingWound(trimmed);
+    const focus = getHealingFocus(wound);
     const offerPrayer = shouldOfferPrayer(trimmed);
+
+    setHealingFocus(focus);
 
     updateButterflyMemory({
       lastConversation: trimmed,
@@ -127,6 +138,11 @@ export default function AICompanionScreen() {
   function calmMe() {
     const prayer = createButterflyPrayer('I feel overwhelmed and need peace.');
 
+    setHealingFocus({
+      title: 'Recovering from Burnout',
+      encouragement: 'Rest is not weakness. It is part of healing.',
+    });
+
     updateButterflyMemory({
       lastEmotion: 'overwhelmed',
       lastExercise: 'Safe Place',
@@ -172,6 +188,13 @@ export default function AICompanionScreen() {
 
       <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent}>
         {memoryMessage ? <MemoryCard message={memoryMessage} /> : null}
+
+        {healingFocus.title ? (
+          <HealingFocusCard
+            title={healingFocus.title}
+            encouragement={healingFocus.encouragement}
+          />
+        ) : null}
 
         {messages.map((message) => (
           <MessageBubble
