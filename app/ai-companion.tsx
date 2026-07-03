@@ -15,10 +15,18 @@ import {
 
 import { addJournalEntry } from '../lib/journal';
 
+type ExerciseRecommendation = {
+  title: string;
+  description: string;
+  route: string;
+  icon: string;
+};
+
 type Message = {
   id: string;
   sender: 'butterfly' | 'user';
   text: string;
+  recommendation?: ExerciseRecommendation;
 };
 
 const starterMessages: Message[] = [
@@ -38,6 +46,8 @@ export default function AICompanionScreen() {
 
     if (!trimmed) return;
 
+    const recommendation = getExerciseRecommendation(trimmed);
+
     const userMessage: Message = {
       id: Date.now().toString(),
       sender: 'user',
@@ -47,7 +57,8 @@ export default function AICompanionScreen() {
     const butterflyReply: Message = {
       id: `${Date.now()}-butterfly`,
       sender: 'butterfly',
-      text: createButterflyReply(trimmed),
+      text: createButterflyReply(trimmed, recommendation),
+      recommendation,
     };
 
     setMessages((current) => [...current, userMessage, butterflyReply]);
@@ -134,6 +145,43 @@ export default function AICompanionScreen() {
             >
               {message.text}
             </Text>
+
+            {message.recommendation && (
+              <View style={styles.recommendationCard}>
+                <View style={styles.recommendationHeader}>
+                  <MaterialCommunityIcons
+                    name={message.recommendation.icon as any}
+                    size={30}
+                    color="#E75480"
+                  />
+
+                  <View style={styles.recommendationTextWrap}>
+                    <Text style={styles.recommendationLabel}>
+                      Gentle Suggestion
+                    </Text>
+
+                    <Text style={styles.recommendationTitle}>
+                      {message.recommendation.title}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.recommendationText}>
+                  {message.recommendation.description}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.recommendationButton}
+                  onPress={() =>
+                    router.push(message.recommendation?.route as any)
+                  }
+                >
+                  <Text style={styles.recommendationButtonText}>
+                    Open Exercise
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -149,6 +197,13 @@ export default function AICompanionScreen() {
                 id: Date.now().toString(),
                 sender: 'butterfly',
                 text: 'Pause with me. Take one slow breath in. Hold it gently. Now let it out. You are here. You are safe in this moment.',
+                recommendation: {
+                  title: 'Safe Place',
+                  description:
+                    'This exercise helps you create a peaceful inner place you can return to when life feels heavy.',
+                  route: '/(tabs)/safe-place',
+                  icon: 'home-heart',
+                },
               },
             ])
           }
@@ -189,7 +244,136 @@ export default function AICompanionScreen() {
   );
 }
 
-function createButterflyReply(text: string) {
+function getExerciseRecommendation(text: string): ExerciseRecommendation | undefined {
+  const lower = text.toLowerCase();
+
+  if (
+    lower.includes('panic') ||
+    lower.includes('anxious') ||
+    lower.includes('anxiety') ||
+    lower.includes('overwhelmed') ||
+    lower.includes('scared') ||
+    lower.includes('afraid') ||
+    lower.includes('unsafe')
+  ) {
+    return {
+      title: 'Safe Place',
+      description:
+        'This may help your body and mind slow down by creating a peaceful place you can return to anytime.',
+      route: '/(tabs)/safe-place',
+      icon: 'home-heart',
+    };
+  }
+
+  if (
+    lower.includes('childhood') ||
+    lower.includes('younger') ||
+    lower.includes('little me') ||
+    lower.includes('when i was a child') ||
+    lower.includes('inner child')
+  ) {
+    return {
+      title: 'Meet Younger Me',
+      description:
+        'This exercise helps you comfort and reconnect with the younger version of yourself.',
+      route: '/(tabs)/meet-younger-me',
+      icon: 'human-child',
+    };
+  }
+
+  if (
+    lower.includes('memory') ||
+    lower.includes('reminded me') ||
+    lower.includes('triggered') ||
+    lower.includes('old hurt') ||
+    lower.includes('past') ||
+    lower.includes('trauma')
+  ) {
+    return {
+      title: 'Rewrite the Scene',
+      description:
+        'This exercise can help you revisit an older painful memory with safety, compassion, truth, and hope.',
+      route: '/(tabs)/rewrite-scene',
+      icon: 'movie-edit',
+    };
+  }
+
+  if (
+    lower.includes('not enough') ||
+    lower.includes('worthless') ||
+    lower.includes('failure') ||
+    lower.includes('rejected') ||
+    lower.includes('unlovable') ||
+    lower.includes('hate myself') ||
+    lower.includes('i am nothing')
+  ) {
+    return {
+      title: 'Mirror Truth',
+      description:
+        'This exercise helps you notice a painful lie and replace it with truth.',
+      route: '/(tabs)/mirror-truth',
+      icon: 'mirror',
+    };
+  }
+
+  if (
+    lower.includes('never said') ||
+    lower.includes('letter') ||
+    lower.includes('i wish i could tell') ||
+    lower.includes('unsaid') ||
+    lower.includes('closure') ||
+    lower.includes('apology')
+  ) {
+    return {
+      title: 'Letters Never Sent',
+      description:
+        'This exercise gives your heart room to say what it has been carrying without pressure to send it.',
+      route: '/(tabs)/letters-never-sent',
+      icon: 'email-outline',
+    };
+  }
+
+  if (
+    lower.includes('future') ||
+    lower.includes('become') ||
+    lower.includes('better version') ||
+    lower.includes('hope') ||
+    lower.includes('next step') ||
+    lower.includes('purpose')
+  ) {
+    return {
+      title: 'Future Self',
+      description:
+        'This exercise helps you meet the healed version of you and take one step toward her.',
+      route: '/(tabs)/future-self',
+      icon: 'star-four-points',
+    };
+  }
+
+  if (
+    lower.includes('thinking') ||
+    lower.includes('thought') ||
+    lower.includes('can’t stop thinking') ||
+    lower.includes("can't stop thinking") ||
+    lower.includes('spiraling') ||
+    lower.includes('overthinking')
+  ) {
+    return {
+      title: 'Change the Thought',
+      description:
+        'This exercise helps you name the painful thought and choose a healthier truth.',
+      route: '/(tabs)/change-the-thought',
+      icon: 'brain',
+    };
+  }
+
+  return undefined;
+}
+
+function createButterflyReply(
+  text: string,
+  recommendation?: ExerciseRecommendation
+) {
   const lower = text.toLowerCase();
 
   if (
@@ -198,7 +382,9 @@ function createButterflyReply(text: string) {
     lower.includes('anxiety') ||
     lower.includes('overwhelmed')
   ) {
-    return 'That sounds heavy. Let us slow this down together. Put both feet on the floor if you can. Name one thing you can see, one thing you can touch, and one thing your body needs right now.';
+    return recommendation
+      ? 'That sounds heavy. Let us slow this down together. I also have a gentle exercise suggestion for you below.'
+      : 'That sounds heavy. Let us slow this down together. Put both feet on the floor if you can. Name one thing you can see, one thing you can touch, and one thing your body needs right now.';
   }
 
   if (
@@ -223,7 +409,9 @@ function createButterflyReply(text: string) {
     lower.includes('not enough') ||
     lower.includes('failure')
   ) {
-    return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. What would you say to someone you loved if they were carrying that same thought?';
+    return recommendation
+      ? 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise suggestion below that may help.'
+      : 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. What would you say to someone you loved if they were carrying that same thought?';
   }
 
   if (
@@ -233,6 +421,10 @@ function createButterflyReply(text: string) {
     lower.includes('scripture')
   ) {
     return 'We can bring this to God gently. Take a breath and say, “Lord, meet me right here.” What do you need from Him in this moment: peace, wisdom, comfort, courage, or strength?';
+  }
+
+  if (recommendation) {
+    return 'Thank you for trusting me with that. I hear something important underneath what you shared, and I have a gentle exercise suggestion that may help.';
   }
 
   return 'Thank you for trusting me with that. Let us take it one piece at a time. What feeling is underneath what you just shared?';
@@ -309,7 +501,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   messageBubble: {
-    maxWidth: '86%',
+    maxWidth: '90%',
     borderRadius: 22,
     padding: 15,
     marginBottom: 12,
@@ -327,6 +519,51 @@ const styles = StyleSheet.create({
   messageText: { fontSize: 16, lineHeight: 23 },
   butterflyText: { color: '#3F2A4D' },
   userText: { color: '#FFFFFF', fontWeight: '700' },
+  recommendationCard: {
+    backgroundColor: '#FFF9F3',
+    borderRadius: 20,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    marginTop: 14,
+  },
+  recommendationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recommendationTextWrap: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  recommendationLabel: {
+    color: '#D4AF37',
+    fontSize: 12,
+    fontWeight: '900',
+    marginBottom: 2,
+  },
+  recommendationTitle: {
+    color: '#4B1D7A',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  recommendationText: {
+    color: '#3F2A4D',
+    fontSize: 14,
+    lineHeight: 21,
+    marginBottom: 12,
+  },
+  recommendationButton: {
+    backgroundColor: '#4B1D7A',
+    borderRadius: 22,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  recommendationButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '900',
+  },
   quickActions: {
     flexDirection: 'row',
     paddingHorizontal: 12,
