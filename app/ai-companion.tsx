@@ -1,18 +1,12 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import { useState } from 'react';
-import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 
+import ChatHeader from '../components/butterfly/ChatHeader';
+import ChatInput from '../components/butterfly/ChatInput';
+import MessageBubble from '../components/butterfly/MessageBubble';
+import QuickActions from '../components/butterfly/QuickActions';
+
+import { createButterflyPrayer, shouldOfferPrayer } from '../lib/butterflyPrayer';
 import { addJournalEntry } from '../lib/journal';
 
 type ExerciseRecommendation = {
@@ -27,6 +21,8 @@ type Message = {
   sender: 'butterfly' | 'user';
   text: string;
   recommendation?: ExerciseRecommendation;
+  prayer?: string;
+  shouldOfferPrayer?: boolean;
 };
 
 const starterMessages: Message[] = [
@@ -47,6 +43,7 @@ export default function AICompanionScreen() {
     if (!trimmed) return;
 
     const recommendation = getExerciseRecommendation(trimmed);
+    const offerPrayer = shouldOfferPrayer(trimmed);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -57,12 +54,26 @@ export default function AICompanionScreen() {
     const butterflyReply: Message = {
       id: `${Date.now()}-butterfly`,
       sender: 'butterfly',
-      text: createButterflyReply(trimmed, recommendation),
+      text: createButterflyReply(trimmed, recommendation, offerPrayer),
       recommendation,
+      shouldOfferPrayer: offerPrayer,
+      prayer: offerPrayer ? createButterflyPrayer(trimmed) : undefined,
     };
 
     setMessages((current) => [...current, userMessage, butterflyReply]);
     setInput('');
+  }
+
+  function addPrayerToChat(prayer: string) {
+    if (!prayer) return;
+
+    const prayerMessage: Message = {
+      id: `${Date.now()}-prayer`,
+      sender: 'butterfly',
+      text: prayer,
+    };
+
+    setMessages((current) => [...current, prayerMessage]);
   }
 
   async function saveReflection() {
@@ -86,11 +97,39 @@ export default function AICompanionScreen() {
         conversation: conversationText,
       },
     });
+  }
 
-    Alert.alert(
-      'Saved',
-      'Your conversation with Butterfly has been saved to your Healing Journal.'
-    );
+  function calmMe() {
+    const prayer = createButterflyPrayer('I feel overwhelmed and need peace.');
+
+    setMessages((current) => [
+      ...current,
+      {
+        id: Date.now().toString(),
+        sender: 'butterfly',
+        text: 'Pause with me. Take one slow breath in. Hold it gently. Now let it out. You are here. You are safe in this moment.',
+        recommendation: {
+          title: 'Safe Place',
+          description:
+            'This exercise helps you create a peaceful inner place you can return to when life feels heavy.',
+          route: '/(tabs)/safe-place',
+          icon: 'home-heart',
+        },
+        shouldOfferPrayer: true,
+        prayer,
+      },
+    ]);
+  }
+
+  function askQuestion() {
+    setMessages((current) => [
+      ...current,
+      {
+        id: Date.now().toString(),
+        sender: 'butterfly',
+        text: 'What feeling is the loudest right now, and what do you wish someone understood about it?',
+      },
+    ]);
   }
 
   return (
@@ -98,148 +137,33 @@ export default function AICompanionScreen() {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.replace('/(tabs)/dashboard' as any)}
-        >
-          <MaterialCommunityIcons name="chevron-left" size={30} color="#4B1D7A" />
-        </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <MaterialCommunityIcons name="butterfly" size={42} color="#E75480" />
-          <Text style={styles.title}>Butterfly</Text>
-          <Text style={styles.subtitle}>Your gentle healing companion</Text>
-        </View>
-
-        <View style={styles.headerSpacer} />
-      </View>
+      <ChatHeader />
 
       <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent}>
-        <View style={styles.safetyCard}>
-          <MaterialCommunityIcons name="heart-circle" size={30} color="#E75480" />
-          <Text style={styles.safetyText}>
-            Butterfly is here for reflection, grounding, prayer, and healing.
-            If you are in immediate danger, please call emergency services or
-            reach out to someone you trust right now.
-          </Text>
-        </View>
-
         {messages.map((message) => (
-          <View
+          <MessageBubble
             key={message.id}
-            style={[
-              styles.messageBubble,
-              message.sender === 'user'
-                ? styles.userBubble
-                : styles.butterflyBubble,
-            ]}
-          >
-            <Text
-              style={[
-                styles.messageText,
-                message.sender === 'user'
-                  ? styles.userText
-                  : styles.butterflyText,
-              ]}
-            >
-              {message.text}
-            </Text>
-
-            {message.recommendation && (
-              <View style={styles.recommendationCard}>
-                <View style={styles.recommendationHeader}>
-                  <MaterialCommunityIcons
-                    name={message.recommendation.icon as any}
-                    size={30}
-                    color="#E75480"
-                  />
-
-                  <View style={styles.recommendationTextWrap}>
-                    <Text style={styles.recommendationLabel}>
-                      Gentle Suggestion
-                    </Text>
-
-                    <Text style={styles.recommendationTitle}>
-                      {message.recommendation.title}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.recommendationText}>
-                  {message.recommendation.description}
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.recommendationButton}
-                  onPress={() =>
-                    router.push(message.recommendation?.route as any)
-                  }
-                >
-                  <Text style={styles.recommendationButtonText}>
-                    Open Exercise
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+            sender={message.sender}
+            text={message.text}
+            recommendation={message.recommendation}
+            prayer={message.prayer}
+            shouldOfferPrayer={message.shouldOfferPrayer}
+            onPray={addPrayerToChat}
+          />
         ))}
       </ScrollView>
 
-      <View style={styles.quickActions}>
-        <QuickButton
-          icon="weather-windy"
-          label="Calm me"
-          onPress={() =>
-            setMessages((current) => [
-              ...current,
-              {
-                id: Date.now().toString(),
-                sender: 'butterfly',
-                text: 'Pause with me. Take one slow breath in. Hold it gently. Now let it out. You are here. You are safe in this moment.',
-                recommendation: {
-                  title: 'Safe Place',
-                  description:
-                    'This exercise helps you create a peaceful inner place you can return to when life feels heavy.',
-                  route: '/(tabs)/safe-place',
-                  icon: 'home-heart',
-                },
-              },
-            ])
-          }
-        />
+      <QuickActions
+        onCalmMe={calmMe}
+        onQuestion={askQuestion}
+        onSave={saveReflection}
+      />
 
-        <QuickButton
-          icon="comment-question"
-          label="Question"
-          onPress={() =>
-            setMessages((current) => [
-              ...current,
-              {
-                id: Date.now().toString(),
-                sender: 'butterfly',
-                text: 'What feeling is the loudest right now, and what do you wish someone understood about it?',
-              },
-            ])
-          }
-        />
-
-        <QuickButton icon="content-save" label="Save" onPress={saveReflection} />
-      </View>
-
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Tell Butterfly what is on your heart..."
-          value={input}
-          onChangeText={setInput}
-          multiline
-        />
-
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <MaterialCommunityIcons name="send" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+      <ChatInput
+        value={input}
+        onChangeText={setInput}
+        onSend={sendMessage}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -372,7 +296,8 @@ function getExerciseRecommendation(text: string): ExerciseRecommendation | undef
 
 function createButterflyReply(
   text: string,
-  recommendation?: ExerciseRecommendation
+  recommendation?: ExerciseRecommendation,
+  offerPrayer?: boolean
 ) {
   const lower = text.toLowerCase();
 
@@ -382,9 +307,15 @@ function createButterflyReply(
     lower.includes('anxiety') ||
     lower.includes('overwhelmed')
   ) {
-    return recommendation
-      ? 'That sounds heavy. Let us slow this down together. I also have a gentle exercise suggestion for you below.'
-      : 'That sounds heavy. Let us slow this down together. Put both feet on the floor if you can. Name one thing you can see, one thing you can touch, and one thing your body needs right now.';
+    if (offerPrayer && recommendation) {
+      return 'That sounds heavy. Let us slow this down together. I also have a gentle exercise and prayer support below.';
+    }
+
+    if (recommendation) {
+      return 'That sounds heavy. Let us slow this down together. I also have a gentle exercise suggestion for you below.';
+    }
+
+    return 'That sounds heavy. Let us slow this down together. Put both feet on the floor if you can. Name one thing you can see, one thing you can touch, and one thing your body needs right now.';
   }
 
   if (
@@ -393,7 +324,9 @@ function createButterflyReply(
     lower.includes('grief') ||
     lower.includes('miss')
   ) {
-    return 'I hear tenderness in that. Grief and sadness can feel like waves. You do not have to fight the wave right now. What part of this hurts the most today?';
+    return offerPrayer
+      ? 'I hear tenderness in that. Grief and sadness can feel like waves. I can sit with you here, and I can pray with you below.'
+      : 'I hear tenderness in that. Grief and sadness can feel like waves. You do not have to fight the wave right now. What part of this hurts the most today?';
   }
 
   if (
@@ -409,211 +342,54 @@ function createButterflyReply(
     lower.includes('not enough') ||
     lower.includes('failure')
   ) {
-    return recommendation
-      ? 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise suggestion below that may help.'
-      : 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. What would you say to someone you loved if they were carrying that same thought?';
+    if (offerPrayer && recommendation) {
+      return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise and prayer support below.';
+    }
+
+    if (recommendation) {
+      return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have a gentle exercise suggestion below that may help.';
+    }
+
+    return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. What would you say to someone you loved if they were carrying that same thought?';
   }
 
   if (
     lower.includes('pray') ||
+    lower.includes('prayer') ||
     lower.includes('god') ||
     lower.includes('jesus') ||
-    lower.includes('scripture')
+    lower.includes('scripture') ||
+    lower.includes('lord') ||
+    lower.includes('faith')
   ) {
-    return 'We can bring this to God gently. Take a breath and say, “Lord, meet me right here.” What do you need from Him in this moment: peace, wisdom, comfort, courage, or strength?';
+    return 'We can bring this to God gently. Tap Pray With Me below, and I will pray with you right here.';
+  }
+
+  if (recommendation && offerPrayer) {
+    return 'Thank you for trusting me with that. I hear something important underneath what you shared. I have a gentle exercise and prayer support below.';
   }
 
   if (recommendation) {
     return 'Thank you for trusting me with that. I hear something important underneath what you shared, and I have a gentle exercise suggestion that may help.';
   }
 
+  if (offerPrayer) {
+    return 'Thank you for trusting me with that. I can hold this gently with you, and I can pray with you below.';
+  }
+
   return 'Thank you for trusting me with that. Let us take it one piece at a time. What feeling is underneath what you just shared?';
 }
 
-function QuickButton({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: string;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <TouchableOpacity style={styles.quickButton} onPress={onPress}>
-      <MaterialCommunityIcons name={icon as any} size={20} color="#E75480" />
-      <Text style={styles.quickButtonText}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFF9F3' },
-  header: {
-    paddingTop: 58,
-    paddingHorizontal: 18,
-    paddingBottom: 14,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 2,
-    borderBottomColor: '#F1D7A7',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#FFF0F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerSpacer: { width: 42 },
-  title: {
-    color: '#4B1D7A',
-    fontSize: 28,
-    fontWeight: '900',
-    marginTop: 2,
-  },
-  subtitle: {
-    color: '#6B4A78',
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  chat: { flex: 1 },
-  chatContent: { padding: 18, paddingBottom: 24 },
-  safetyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-    marginBottom: 18,
-    flexDirection: 'row',
-    gap: 12,
-  },
-  safetyText: {
+  screen: {
     flex: 1,
-    color: '#4B1D7A',
-    fontSize: 14,
-    lineHeight: 21,
-    fontWeight: '700',
-  },
-  messageBubble: {
-    maxWidth: '90%',
-    borderRadius: 22,
-    padding: 15,
-    marginBottom: 12,
-  },
-  butterflyBubble: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F1D7A7',
-    alignSelf: 'flex-start',
-  },
-  userBubble: {
-    backgroundColor: '#E75480',
-    alignSelf: 'flex-end',
-  },
-  messageText: { fontSize: 16, lineHeight: 23 },
-  butterflyText: { color: '#3F2A4D' },
-  userText: { color: '#FFFFFF', fontWeight: '700' },
-  recommendationCard: {
     backgroundColor: '#FFF9F3',
-    borderRadius: 20,
-    padding: 14,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-    marginTop: 14,
   },
-  recommendationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  recommendationTextWrap: {
+  chat: {
     flex: 1,
-    marginLeft: 10,
   },
-  recommendationLabel: {
-    color: '#D4AF37',
-    fontSize: 12,
-    fontWeight: '900',
-    marginBottom: 2,
-  },
-  recommendationTitle: {
-    color: '#4B1D7A',
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  recommendationText: {
-    color: '#3F2A4D',
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 12,
-  },
-  recommendationButton: {
-    backgroundColor: '#4B1D7A',
-    borderRadius: 22,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  recommendationButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  quickActions: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: '#FFF9F3',
-    gap: 8,
-  },
-  quickButton: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#F1D7A7',
-    borderRadius: 18,
-    paddingVertical: 10,
-    alignItems: 'center',
-    gap: 3,
-  },
-  quickButtonText: {
-    color: '#4B1D7A',
-    fontWeight: '900',
-    fontSize: 12,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 14,
-    paddingBottom: 28,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 2,
-    borderTopColor: '#F1D7A7',
-  },
-  input: {
-    flex: 1,
-    maxHeight: 110,
-    minHeight: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
-    backgroundColor: '#FFF9F3',
-    marginRight: 10,
-  },
-  sendButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#E75480',
-    alignItems: 'center',
-    justifyContent: 'center',
+  chatContent: {
+    padding: 18,
+    paddingBottom: 24,
   },
 });
