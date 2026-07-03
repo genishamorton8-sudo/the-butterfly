@@ -1,56 +1,105 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+const exercises = [
+  {
+    title: 'Rewrite the Scene',
+    description: 'Gently revisit a painful memory and rewrite it with safety, compassion, and hope.',
+    route: '/(tabs)/rewrite-scene',
+    icon: 'movie-edit',
+  },
+  {
+    title: 'Change the Thought',
+    description: 'Replace painful beliefs with healthier, truthful thoughts.',
+    route: '/(tabs)/change-the-thought',
+    icon: 'brain',
+  },
+  {
+    title: 'Meet Younger Me',
+    description: 'Comfort and reconnect with the younger version of yourself.',
+    route: '/(tabs)/meet-younger-me',
+    icon: 'human-child',
+  },
+  {
+    title: 'Safe Place',
+    description: 'Create a peaceful inner place you can return to anytime.',
+    route: '/(tabs)/safe-place',
+    icon: 'home-heart',
+  },
+  {
+    title: 'Mirror Truth',
+    description: 'Replace lies with truth and speak kindly over yourself.',
+    route: '/(tabs)/mirror-truth',
+    icon: 'mirror',
+  },
+  {
+    title: 'Letters Never Sent',
+    description: 'Write the words your heart has been carrying without pressure to send them.',
+    route: '/(tabs)/letters-never-sent',
+    icon: 'email-outline',
+  },
+  {
+    title: 'Future Self',
+    description: 'Meet the healed version of you and take one step toward her.',
+    route: '/(tabs)/future-self',
+    icon: 'star-four-points',
+  },
+];
 
 export default function HealingExercisesScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.icon}>🌿</Text>
+      <MaterialCommunityIcons
+        name="sprout"
+        size={54}
+        color="#E75480"
+        style={styles.topIcon}
+      />
+
       <Text style={styles.title}>Butterfly Healing Studio</Text>
-      <Text style={styles.subtitle}>Choose the healing experience you need today.</Text>
 
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/rewrite-scene' as any)}>
-        <Text style={styles.cardTitle}>🌅 Rewrite the Scene</Text>
-        <Text style={styles.cardText}>Gently revisit a painful memory and rewrite it with safety, compassion, and hope.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
+      <Text style={styles.subtitle}>
+        Choose the healing experience you need today.
+      </Text>
 
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/change-the-thought' as any)}>
-        <Text style={styles.cardTitle}>🧠 Change the Thought</Text>
-        <Text style={styles.cardText}>Replace painful beliefs with healthier, truthful thoughts.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
+      {exercises.map((exercise) => (
+        <TouchableOpacity
+          key={exercise.title}
+          style={styles.card}
+          onPress={() => router.push(exercise.route as any)}
+        >
+          <View style={styles.iconCircle}>
+            <MaterialCommunityIcons
+              name={exercise.icon as any}
+              size={30}
+              color="#E75480"
+            />
+          </View>
 
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/meet-younger-me' as any)}>
-        <Text style={styles.cardTitle}>👧 Meet Younger Me</Text>
-        <Text style={styles.cardText}>Comfort and reconnect with the younger version of yourself.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
+          <View style={styles.cardTextWrap}>
+            <Text style={styles.cardTitle}>{exercise.title}</Text>
+            <Text style={styles.cardText}>{exercise.description}</Text>
+          </View>
 
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/safe-place' as any)}>
-        <Text style={styles.cardTitle}>🏡 Safe Place</Text>
-        <Text style={styles.cardText}>Create a peaceful inner place you can return to anytime.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
+          <MaterialCommunityIcons
+            name="chevron-right-circle"
+            size={30}
+            color="#D4AF37"
+          />
+        </TouchableOpacity>
+      ))}
 
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/mirror-truth' as any)}>
-        <Text style={styles.cardTitle}>🪞 Mirror Truth</Text>
-        <Text style={styles.cardText}>Replace lies with truth and speak kindly over yourself.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/letters-never-sent' as any)}>
-        <Text style={styles.cardTitle}>💌 Letters Never Sent</Text>
-        <Text style={styles.cardText}>Write the words your heart has been carrying without pressure to send them.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.card} onPress={() => router.push('/(tabs)/future-self' as any)}>
-        <Text style={styles.cardTitle}>🌸 Future Self</Text>
-        <Text style={styles.cardText}>Meet the healed version of you and take one step toward her.</Text>
-        <Text style={styles.open}>Open</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(tabs)/dashboard' as any)}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.replace('/(tabs)/dashboard' as any)}
+      >
         <Text style={styles.backText}>Back to Dashboard</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -58,15 +107,77 @@ export default function HealingExercisesScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFF9F3' },
-  content: { padding: 24, paddingTop: 70, paddingBottom: 120 },
-  icon: { fontSize: 58, textAlign: 'center', marginBottom: 10 },
-  title: { color: '#4B1D7A', fontSize: 32, fontWeight: '900', textAlign: 'center' },
-  subtitle: { color: '#555', fontSize: 16, textAlign: 'center', marginTop: 10, marginBottom: 24, lineHeight: 24 },
-  card: { backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, borderWidth: 2, borderColor: '#F1D7A7', marginBottom: 16 },
-  cardTitle: { color: '#4B1D7A', fontSize: 21, fontWeight: '900', marginBottom: 8 },
-  cardText: { color: '#3F2A4D', fontSize: 15, lineHeight: 22 },
-  open: { color: '#E75480', fontSize: 14, fontWeight: '900', marginTop: 12 },
-  backButton: { borderColor: '#4B1D7A', borderWidth: 2, padding: 16, borderRadius: 30, alignItems: 'center', marginTop: 10 },
-  backText: { color: '#4B1D7A', fontSize: 16, fontWeight: '900' },
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFF9F3',
+  },
+  content: {
+    padding: 24,
+    paddingTop: 60,
+    paddingBottom: 120,
+  },
+  topIcon: {
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#4B1D7A',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#FFF0F5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  cardTextWrap: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#4B1D7A',
+    marginBottom: 6,
+  },
+  cardText: {
+    fontSize: 14,
+    color: '#555',
+    lineHeight: 20,
+  },
+  backButton: {
+    borderWidth: 2,
+    borderColor: '#4B1D7A',
+    borderRadius: 30,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  backText: {
+    color: '#4B1D7A',
+    fontSize: 16,
+    fontWeight: '900',
+  },
 });

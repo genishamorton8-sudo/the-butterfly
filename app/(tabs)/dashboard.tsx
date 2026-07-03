@@ -86,6 +86,23 @@ export default function DashboardScreen() {
       <Text style={styles.title}>Welcome back, friend</Text>
       <Text style={styles.subtitle}>Your healing home base.</Text>
 
+      <View style={styles.aiCard}>
+        <Text style={styles.aiLabel}>Your AI Companion</Text>
+        <Text style={styles.aiTitle}>🦋 Butterfly</Text>
+
+        <Text style={styles.aiText}>
+          Talk through your thoughts, pray, reflect, process emotions, and
+          receive gentle support anytime.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.aiButton}
+          onPress={() => router.push('/ai-companion' as any)}
+        >
+          <Text style={styles.aiButtonText}>Talk with Butterfly</Text>
+        </TouchableOpacity>
+      </View>
+
       {isAdmin && (
         <TouchableOpacity
           style={styles.adminButton}
@@ -172,11 +189,29 @@ export default function DashboardScreen() {
       </View>
 
       <View style={styles.featureCard}>
+        <Text style={styles.featureLabel}>Foundation</Text>
+        <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
+
+        <Text style={styles.featureText}>
+          Begin with guided healing exercises for your thoughts, memories,
+          emotions, and inner healing journey.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.healingButton}
+          onPress={() => router.push('/(tabs)/healing-exercises' as any)}
+        >
+          <Text style={styles.healingButtonText}>Open Healing Studio</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.featureCard}>
         <Text style={styles.featureLabel}>Beta Tools</Text>
         <Text style={styles.featureTitle}>🦋 Beta Center</Text>
 
         <Text style={styles.featureText}>
-          Report bugs, suggest features, and help shape The Butterfly before public launch.
+          Report bugs, suggest features, and help shape The Butterfly before
+          public launch.
         </Text>
 
         <TouchableOpacity
@@ -187,41 +222,97 @@ export default function DashboardScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.featureCard}>
-        <Text style={styles.featureLabel}>Foundation</Text>
-        <Text style={styles.featureTitle}>🌿 Butterfly Healing Studio</Text>
-
-        <Text style={styles.featureText}>
-          Begin with Rewrite the Scene, a guided imagery rescripting exercise
-          for healing painful memories with compassion, protection, truth, and hope.
-        </Text>
-
-        <TouchableOpacity
-          style={styles.healingButton}
-          onPress={() => router.push('/healing-exercises' as any)}
-        >
-          <Text style={styles.healingButtonText}>Open Healing Studio</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.grid}>
-        <HomeButton title="Daily Check-In" emoji="🦋" onPress={() => router.push('/check-in' as any)} />
-        <HomeButton title="Application" emoji="🦋" onPress={() => router.push('/(tabs)/application' as any)} />
-        <HomeButton title="Beta Center" emoji="🦋" onPress={() => router.push('/(tabs)/beta-center' as any)} />
-        <HomeButton title="Bug Report" emoji="🐞" onPress={() => router.push('/(tabs)/bug-report' as any)} />
-        <HomeButton title="Feature Request" emoji="💡" onPress={() => router.push('/(tabs)/feature-request' as any)} />
-        <HomeButton title="Profile" emoji="👤" onPress={() => router.push('/(tabs)/profile' as any)} />
-        <HomeButton title="Mood Check" emoji="😊" onPress={() => router.push('/(tabs)/mood' as any)} />
-        <HomeButton title="Today’s Word" emoji="📖" onPress={() => router.push('/(tabs)/today-word' as any)} />
-        <HomeButton title="Journal" emoji="📝" onPress={() => router.push('/(tabs)/journal' as any)} />
-        <HomeButton title="Prayer" emoji="🙏" onPress={() => router.push('/prayer' as any)} />
-        <HomeButton title="Garden" emoji="🌸" onPress={() => router.push('/(tabs)/garden' as any)} />
-        <HomeButton title="My Transformation" emoji="📸" onPress={() => router.push('/(tabs)/upload-selfie' as any)} />
-        <HomeButton title="Testimonials" emoji="🦋" onPress={() => router.push('/(tabs)/testimonials' as any)} />
-        <HomeButton title="Butterfly Partners" emoji="🤝" onPress={() => router.push('/(tabs)/accountability' as any)} />
-        <HomeButton title="Celebrate" emoji="🎉" onPress={() => router.push('/(tabs)/celebrate' as any)} />
-        <HomeButton title="Skin Tone" emoji={skinToneEmoji} onPress={() => router.push('/(tabs)/skin-tone' as any)} />
-        <HomeButton title="Emergency Help" emoji="💙" onPress={() => router.push('/emergency' as any)} />
+        <HomeButton
+          title="Butterfly AI"
+          emoji="🦋"
+          onPress={() => router.push('/ai-companion' as any)}
+        />
+        <HomeButton
+          title="Daily Check-In"
+          emoji="🦋"
+          onPress={() => router.push('/check-in' as any)}
+        />
+        <HomeButton
+          title="Application"
+          emoji="🦋"
+          onPress={() => router.push('/(tabs)/application' as any)}
+        />
+        <HomeButton
+          title="Beta Center"
+          emoji="🦋"
+          onPress={() => router.push('/(tabs)/beta-center' as any)}
+        />
+        <HomeButton
+          title="Bug Report"
+          emoji="🐞"
+          onPress={() => router.push('/(tabs)/bug-report' as any)}
+        />
+        <HomeButton
+          title="Feature Request"
+          emoji="💡"
+          onPress={() => router.push('/(tabs)/feature-request' as any)}
+        />
+        <HomeButton
+          title="Profile"
+          emoji="👤"
+          onPress={() => router.push('/(tabs)/profile' as any)}
+        />
+        <HomeButton
+          title="Mood Check"
+          emoji="😊"
+          onPress={() => router.push('/(tabs)/mood' as any)}
+        />
+        <HomeButton
+          title="Today’s Word"
+          emoji="📖"
+          onPress={() => router.push('/(tabs)/today-word' as any)}
+        />
+        <HomeButton
+          title="Journal"
+          emoji="📝"
+          onPress={() => router.push('/(tabs)/healing-journal' as any)}
+        />
+        <HomeButton
+          title="Prayer"
+          emoji="🙏"
+          onPress={() => router.push('/prayer' as any)}
+        />
+        <HomeButton
+          title="Garden"
+          emoji="🌸"
+          onPress={() => router.push('/(tabs)/garden' as any)}
+        />
+        <HomeButton
+          title="My Transformation"
+          emoji="📸"
+          onPress={() => router.push('/(tabs)/upload-selfie' as any)}
+        />
+        <HomeButton
+          title="Testimonials"
+          emoji="🦋"
+          onPress={() => router.push('/(tabs)/testimonials' as any)}
+        />
+        <HomeButton
+          title="Butterfly Partners"
+          emoji="🤝"
+          onPress={() => router.push('/(tabs)/accountability' as any)}
+        />
+        <HomeButton
+          title="Celebrate"
+          emoji="🎉"
+          onPress={() => router.push('/(tabs)/celebrate' as any)}
+        />
+        <HomeButton
+          title="Skin Tone"
+          emoji={skinToneEmoji}
+          onPress={() => router.push('/(tabs)/skin-tone' as any)}
+        />
+        <HomeButton
+          title="Emergency Help"
+          emoji="💙"
+          onPress={() => router.push('/emergency' as any)}
+        />
       </View>
 
       <View style={styles.progressCard}>
@@ -287,6 +378,48 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 18,
+  },
+  aiCard: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    borderRadius: 30,
+    padding: 24,
+    borderWidth: 3,
+    borderColor: '#E75480',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  aiLabel: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  aiTitle: {
+    color: '#4B1D7A',
+    fontSize: 30,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  aiText: {
+    color: '#3F2A4D',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    marginBottom: 18,
+  },
+  aiButton: {
+    backgroundColor: '#E75480',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  aiButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: '900',
   },
   adminButton: {
     backgroundColor: '#D4AF37',
