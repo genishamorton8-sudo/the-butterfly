@@ -1,0 +1,101 @@
+export type CompanionProfile = {
+  firstName?: string;
+  importantPeople: string[];
+  importantEvents: string[];
+  victories: string[];
+  struggles: string[];
+  favoriteScriptures: string[];
+  preferredPrayerTopics: string[];
+  lastCheckIn?: string;
+};
+
+let profile: CompanionProfile = {
+  importantPeople: [],
+  importantEvents: [],
+  victories: [],
+  struggles: [],
+  favoriteScriptures: [],
+  preferredPrayerTopics: [],
+};
+
+export function getCompanionProfile() {
+  return profile;
+}
+
+export function rememberPerson(name: string) {
+  if (
+    name &&
+    !profile.importantPeople.includes(name)
+  ) {
+    profile.importantPeople.push(name);
+  }
+}
+
+export function rememberVictory(victory: string) {
+  if (
+    victory &&
+    !profile.victories.includes(victory)
+  ) {
+    profile.victories.push(victory);
+  }
+}
+
+export function rememberStruggle(struggle: string) {
+  if (
+    struggle &&
+    !profile.struggles.includes(struggle)
+  ) {
+    profile.struggles.push(struggle);
+  }
+}
+
+export function rememberEvent(event: string) {
+  if (
+    event &&
+    !profile.importantEvents.includes(event)
+  ) {
+    profile.importantEvents.push(event);
+  }
+}
+
+export function rememberFavoriteScripture(reference: string) {
+  if (
+    reference &&
+    !profile.favoriteScriptures.includes(reference)
+  ) {
+    profile.favoriteScriptures.push(reference);
+  }
+}
+
+export function rememberPrayerTopic(topic: string) {
+  if (
+    topic &&
+    !profile.preferredPrayerTopics.includes(topic)
+  ) {
+    profile.preferredPrayerTopics.push(topic);
+  }
+}
+
+export function buildCompanionGreeting() {
+  const pieces: string[] = [];
+
+  pieces.push("Welcome back.");
+
+  if (profile.victories.length > 0) {
+    pieces.push(
+      `I'm still celebrating ${profile.victories[profile.victories.length - 1]} with you.`
+    );
+  }
+
+  if (profile.struggles.length > 0) {
+    pieces.push(
+      `I also remember we've been walking through ${profile.struggles[profile.struggles.length - 1]}.`
+    );
+  }
+
+  pieces.push(
+    "I'm grateful you're here today. Let's continue your healing journey together."
+  );
+
+  return pieces.join(" ");
+}
