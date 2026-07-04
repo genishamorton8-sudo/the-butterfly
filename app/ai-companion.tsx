@@ -1,432 +1,135 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
-
-import ChatHeader from '../components/butterfly/ChatHeader';
-import ChatInput from '../components/butterfly/ChatInput';
-import HealingFocusCard from '../components/butterfly/HealingFocusCard';
-import MemoryCard from '../components/butterfly/MemoryCard';
-import MessageBubble from '../components/butterfly/MessageBubble';
-import QuickActions from '../components/butterfly/QuickActions';
-
-import {
-    buildWelcomeBackMessage,
-    getButterflyMemory,
-    updateButterflyMemory,
-} from '../lib/butterflyMemory';
-import { createButterflyPrayer, shouldOfferPrayer } from '../lib/butterflyPrayer';
-import { detectEmotion } from '../lib/emotionDetector';
-import { addJournalEntry } from '../lib/journal';
-import { detectHealingWound, getHealingFocus } from '../lib/woundDetector';
-
-type ExerciseRecommendation = {
-  title: string;
-  description: string;
-  route: string;
-  icon: string;
-};
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { buildGentleCheckIn } from '../lib/gentleCheckIns';
 
 type Message = {
-  id: string;
-  sender: 'butterfly' | 'user';
+  id: number;
+  sender: 'user' | 'butterfly';
   text: string;
-  recommendation?: ExerciseRecommendation;
-  prayer?: string;
-  shouldOfferPrayer?: boolean;
 };
-
-type HealingFocus = {
-  title: string;
-  encouragement: string;
-};
-
-const starterMessages: Message[] = [
-  {
-    id: '1',
-    sender: 'butterfly',
-    text: "Good morning. I'm Butterfly. I'm here with you. What do you need help processing today?",
-  },
-];
 
 export default function AICompanionScreen() {
-  const [messages, setMessages] = useState<Message[]>(starterMessages);
-  const [input, setInput] = useState('');
-  const [healingFocus, setHealingFocus] = useState<HealingFocus>({
-    title: '',
-    encouragement: '',
-  });
+  const gentleCheckIn = buildGentleCheckIn();
 
-  const [memoryMessage] = useState(() => {
-    const memory = getButterflyMemory();
-    return memory.conversationCount === 0 ? '' : buildWelcomeBackMessage();
-  });
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      sender: 'butterfly',
+      text: 'I am here with you. Tell me what is on your heart today.',
+    },
+  ]);
 
   function sendMessage() {
-    const trimmed = input.trim();
-
-    if (!trimmed) return;
-
-    const recommendation = getExerciseRecommendation(trimmed);
-    const emotion = detectEmotion(trimmed);
-    const wound = detectHealingWound(trimmed);
-    const focus = getHealingFocus(wound);
-    const offerPrayer = shouldOfferPrayer(trimmed);
-
-    setHealingFocus(focus);
-
-    updateButterflyMemory({
-      lastConversation: trimmed,
-      lastEmotion: emotion === 'unknown' ? undefined : emotion,
-      lastExercise: recommendation?.title,
-      lastPrayerTopic: offerPrayer ? trimmed : undefined,
-    });
+    if (!message.trim()) {
+      return;
+    }
 
     const userMessage: Message = {
-      id: Date.now().toString(),
+      id: Date.now(),
       sender: 'user',
-      text: trimmed,
+      text: message.trim(),
     };
 
-    const butterflyReply: Message = {
-      id: `${Date.now()}-butterfly`,
+    const butterflyMessage: Message = {
+      id: Date.now() + 1,
       sender: 'butterfly',
-      text: createButterflyReply(trimmed, recommendation, offerPrayer, emotion),
-      recommendation,
-      shouldOfferPrayer: offerPrayer,
-      prayer: offerPrayer ? createButterflyPrayer(trimmed) : undefined,
+      text: 'Thank you for sharing that with me. Let’s slow down and take this one step at a time.',
     };
 
-    setMessages((current) => [...current, userMessage, butterflyReply]);
-    setInput('');
-  }
-
-  function addPrayerToChat(prayer: string) {
-    if (!prayer) return;
-
-    setMessages((current) => [
-      ...current,
-      {
-        id: `${Date.now()}-prayer`,
-        sender: 'butterfly',
-        text: prayer,
-      },
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      userMessage,
+      butterflyMessage,
     ]);
-  }
 
-  async function saveReflection() {
-    const conversationText = messages
-      .map((message) =>
-        message.sender === 'user'
-          ? `Me: ${message.text}`
-          : `Butterfly: ${message.text}`
-      )
-      .join('\n\n');
-
-    await addJournalEntry({
-      id: Date.now().toString(),
-      title: 'Butterfly Conversation',
-      exercise: 'Butterfly AI',
-      date: new Date().toISOString(),
-      preview:
-        messages[messages.length - 1]?.text ||
-        'A saved conversation with Butterfly.',
-      answers: {
-        conversation: conversationText,
-      },
-    });
-  }
-
-  function calmMe() {
-    const prayer = createButterflyPrayer('I feel overwhelmed and need peace.');
-
-    setHealingFocus({
-      title: 'Recovering from Burnout',
-      encouragement: 'Rest is not weakness. It is part of healing.',
-    });
-
-    updateButterflyMemory({
-      lastEmotion: 'overwhelmed',
-      lastExercise: 'Safe Place',
-      lastPrayerTopic: 'peace and calm',
-    });
-
-    setMessages((current) => [
-      ...current,
-      {
-        id: Date.now().toString(),
-        sender: 'butterfly',
-        text: 'Pause with me. Take one slow breath in. Hold it gently. Now let it out. You are here. You are safe in this moment.',
-        recommendation: {
-          title: 'Safe Place',
-          description:
-            'This exercise helps you create a peaceful inner place you can return to when life feels heavy.',
-          route: '/(tabs)/safe-place',
-          icon: 'home-heart',
-        },
-        shouldOfferPrayer: true,
-        prayer,
-      },
-    ]);
-  }
-
-  function askQuestion() {
-    setMessages((current) => [
-      ...current,
-      {
-        id: Date.now().toString(),
-        sender: 'butterfly',
-        text: 'What feeling is the loudest right now, and what do you wish someone understood about it?',
-      },
-    ]);
+    setMessage('');
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ChatHeader />
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <View style={styles.hero}>
+        <MaterialCommunityIcons name="butterfly" size={42} color="#E75480" />
+        <Text style={styles.heroTitle}>Butterfly Companion</Text>
+        <Text style={styles.heroText}>
+          Welcome back. Let’s continue your healing journey one honest step at a time.
+        </Text>
+      </View>
 
-      <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent}>
-        {memoryMessage ? <MemoryCard message={memoryMessage} /> : null}
-
-        {healingFocus.title ? (
-          <HealingFocusCard
-            title={healingFocus.title}
-            encouragement={healingFocus.encouragement}
-          />
-        ) : null}
-
-        {messages.map((message) => (
-          <MessageBubble
-            key={message.id}
-            sender={message.sender}
-            text={message.text}
-            recommendation={message.recommendation}
-            prayer={message.prayer}
-            shouldOfferPrayer={message.shouldOfferPrayer}
-            onPray={addPrayerToChat}
-          />
-        ))}
-      </ScrollView>
-
-      <QuickActions
-        onCalmMe={calmMe}
-        onQuestion={askQuestion}
-        onSave={saveReflection}
+      <HealingCard
+        icon="heart-outline"
+        title={gentleCheckIn.title}
+        text={gentleCheckIn.message}
       />
 
-      <ChatInput value={input} onChangeText={setInput} onSend={sendMessage} />
-    </KeyboardAvoidingView>
+      <HealingCard
+        icon="leaf"
+        title="Today’s Healing Focus"
+        text="Slow down, breathe, and notice what your heart needs before you push forward."
+      />
+
+      <HealingCard
+        icon="book-open-page-variant"
+        title="Scripture"
+        text="Philippians 1:6 — God is still working in you."
+      />
+
+      <HealingCard
+        icon="hands-pray"
+        title="Prayer"
+        text="Father, guide my healing today. Help me feel safe, seen, and strengthened. Amen."
+      />
+
+      <View style={styles.chatBox}>
+        <Text style={styles.chatTitle}>Continue Conversation</Text>
+
+        {messages.map((item) => (
+          <View
+            key={item.id}
+            style={[
+              styles.messageBubble,
+              item.sender === 'user' ? styles.userBubble : styles.butterflyBubble,
+            ]}
+          >
+            <Text style={styles.messageText}>{item.text}</Text>
+          </View>
+        ))}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Tell Butterfly what’s on your heart..."
+          placeholderTextColor="#8B7A90"
+          multiline
+          value={message}
+          onChangeText={setMessage}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={sendMessage}>
+          <Text style={styles.buttonText}>Send to Butterfly</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
-function getExerciseRecommendation(text: string): ExerciseRecommendation | undefined {
-  const lower = text.toLowerCase();
+type HealingCardProps = {
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+  title: string;
+  text: string;
+};
 
-  if (
-    lower.includes('panic') ||
-    lower.includes('anxious') ||
-    lower.includes('anxiety') ||
-    lower.includes('overwhelmed') ||
-    lower.includes('scared') ||
-    lower.includes('afraid') ||
-    lower.includes('unsafe')
-  ) {
-    return {
-      title: 'Safe Place',
-      description:
-        'This may help your body and mind slow down by creating a peaceful place you can return to anytime.',
-      route: '/(tabs)/safe-place',
-      icon: 'home-heart',
-    };
-  }
+function HealingCard({ icon, title, text }: HealingCardProps) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <MaterialCommunityIcons name={icon} size={26} color="#4B1D7A" />
+        <Text style={styles.cardTitle}>{title}</Text>
+      </View>
 
-  if (
-    lower.includes('childhood') ||
-    lower.includes('younger') ||
-    lower.includes('little me') ||
-    lower.includes('when i was a child') ||
-    lower.includes('inner child')
-  ) {
-    return {
-      title: 'Meet Younger Me',
-      description:
-        'This exercise helps you comfort and reconnect with the younger version of yourself.',
-      route: '/(tabs)/meet-younger-me',
-      icon: 'human-child',
-    };
-  }
-
-  if (
-    lower.includes('memory') ||
-    lower.includes('reminded me') ||
-    lower.includes('triggered') ||
-    lower.includes('old hurt') ||
-    lower.includes('past') ||
-    lower.includes('trauma')
-  ) {
-    return {
-      title: 'Rewrite the Scene',
-      description:
-        'This exercise can help you revisit an older painful memory with safety, compassion, truth, and hope.',
-      route: '/(tabs)/rewrite-scene',
-      icon: 'movie-edit',
-    };
-  }
-
-  if (
-    lower.includes('not enough') ||
-    lower.includes('worthless') ||
-    lower.includes('failure') ||
-    lower.includes('rejected') ||
-    lower.includes('unlovable') ||
-    lower.includes('hate myself') ||
-    lower.includes('i am nothing')
-  ) {
-    return {
-      title: 'Mirror Truth',
-      description:
-        'This exercise helps you notice a painful lie and replace it with truth.',
-      route: '/(tabs)/mirror-truth',
-      icon: 'mirror',
-    };
-  }
-
-  if (
-    lower.includes('never said') ||
-    lower.includes('letter') ||
-    lower.includes('i wish i could tell') ||
-    lower.includes('unsaid') ||
-    lower.includes('closure') ||
-    lower.includes('apology')
-  ) {
-    return {
-      title: 'Letters Never Sent',
-      description:
-        'This exercise gives your heart room to say what it has been carrying without pressure to send it.',
-      route: '/(tabs)/letters-never-sent',
-      icon: 'email-outline',
-    };
-  }
-
-  if (
-    lower.includes('future') ||
-    lower.includes('become') ||
-    lower.includes('better version') ||
-    lower.includes('hope') ||
-    lower.includes('next step') ||
-    lower.includes('purpose')
-  ) {
-    return {
-      title: 'Future Self',
-      description:
-        'This exercise helps you meet the healed version of you and take one step toward her.',
-      route: '/(tabs)/future-self',
-      icon: 'star-four-points',
-    };
-  }
-
-  if (
-    lower.includes('thinking') ||
-    lower.includes('thought') ||
-    lower.includes('can’t stop thinking') ||
-    lower.includes("can't stop thinking") ||
-    lower.includes('spiraling') ||
-    lower.includes('overthinking')
-  ) {
-    return {
-      title: 'Change the Thought',
-      description:
-        'This exercise helps you name the painful thought and choose a healthier truth.',
-      route: '/(tabs)/change-the-thought',
-      icon: 'brain',
-    };
-  }
-
-  return undefined;
-}
-
-function createButterflyReply(
-  text: string,
-  recommendation?: ExerciseRecommendation,
-  offerPrayer?: boolean,
-  emotion?: string
-) {
-  const lower = text.toLowerCase();
-
-  if (
-    lower.includes('panic') ||
-    lower.includes('anxious') ||
-    lower.includes('anxiety') ||
-    lower.includes('overwhelmed')
-  ) {
-    return 'That sounds heavy. Let us slow this down together. I have support for your body, your thoughts, and your spirit below.';
-  }
-
-  if (emotion === 'grieving') {
-    return 'I hear grief in what you shared. You do not have to rush your healing. Let us hold this gently together.';
-  }
-
-  if (emotion === 'lonely') {
-    return 'Feeling alone can be so heavy. I am here with you in this moment. Let us take this one piece at a time.';
-  }
-
-  if (emotion === 'ashamed') {
-    return 'Shame can make pain feel louder than truth. You are not your worst moment, and you are not beyond healing.';
-  }
-
-  if (
-    lower.includes('sad') ||
-    lower.includes('cry') ||
-    lower.includes('grief') ||
-    lower.includes('miss')
-  ) {
-    return offerPrayer
-      ? 'I hear tenderness in that. Grief and sadness can feel like waves. I can sit with you here, and I can pray with you below.'
-      : 'I hear tenderness in that. Grief and sadness can feel like waves. You do not have to fight the wave right now. What part of this hurts the most today?';
-  }
-
-  if (
-    lower.includes('angry') ||
-    lower.includes('mad') ||
-    lower.includes('frustrated')
-  ) {
-    return 'Your anger may be trying to protect something important. Let us listen without judging it. What boundary, need, or truth might your anger be pointing to?';
-  }
-
-  if (
-    lower.includes('worthless') ||
-    lower.includes('not enough') ||
-    lower.includes('failure')
-  ) {
-    return 'I am sorry that thought has been so loud. A painful thought is not the same thing as truth. I have support below that may help.';
-  }
-
-  if (
-    lower.includes('pray') ||
-    lower.includes('prayer') ||
-    lower.includes('god') ||
-    lower.includes('jesus') ||
-    lower.includes('scripture') ||
-    lower.includes('lord') ||
-    lower.includes('faith')
-  ) {
-    return 'We can bring this to God gently. Tap Pray With Me below, and I will pray with you right here.';
-  }
-
-  if (recommendation && offerPrayer) {
-    return 'Thank you for trusting me with that. I hear something important underneath what you shared. I have a gentle exercise and prayer support below.';
-  }
-
-  if (recommendation) {
-    return 'Thank you for trusting me with that. I have a gentle exercise suggestion that may help.';
-  }
-
-  if (offerPrayer) {
-    return 'Thank you for trusting me with that. I can hold this gently with you, and I can pray with you below.';
-  }
-
-  return 'Thank you for trusting me with that. Let us take it one piece at a time. What feeling is underneath what you just shared?';
+      <Text style={styles.cardText}>{text}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -434,11 +137,107 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF9F3',
   },
-  chat: {
-    flex: 1,
+  content: {
+    padding: 20,
+    paddingBottom: 40,
   },
-  chatContent: {
+  hero: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 22,
+    marginBottom: 18,
+    borderWidth: 2,
+    borderColor: '#E75480',
+    alignItems: 'center',
+  },
+  heroTitle: {
+    color: '#4B1D7A',
+    fontSize: 28,
+    fontWeight: '900',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  heroText: {
+    color: '#3F2A4D',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
     padding: 18,
-    paddingBottom: 24,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E8DFF0',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cardTitle: {
+    color: '#4B1D7A',
+    fontSize: 18,
+    fontWeight: '900',
+    marginLeft: 10,
+  },
+  cardText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 23,
+  },
+  chatBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 18,
+    marginTop: 6,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+  },
+  chatTitle: {
+    color: '#4B1D7A',
+    fontSize: 20,
+    fontWeight: '900',
+    marginBottom: 12,
+  },
+  messageBubble: {
+    borderRadius: 18,
+    padding: 12,
+    marginBottom: 10,
+  },
+  butterflyBubble: {
+    backgroundColor: '#F4EAF8',
+  },
+  userBubble: {
+    backgroundColor: '#FFE4EC',
+  },
+  messageText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  input: {
+    backgroundColor: '#FFF9F3',
+    borderRadius: 16,
+    minHeight: 110,
+    padding: 14,
+    color: '#3F2A4D',
+    fontSize: 15,
+    textAlignVertical: 'top',
+    marginTop: 8,
+  },
+  button: {
+    backgroundColor: '#E75480',
+    borderRadius: 18,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 14,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
   },
 });
