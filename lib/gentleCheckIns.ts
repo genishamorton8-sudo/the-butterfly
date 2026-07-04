@@ -1,6 +1,4 @@
-import { getCompanionProfile } from './butterflyCompanion';
-import { daysSinceLastConversation } from './conversationContinuity';
-import { getHealingJourney, getStrongestTheme } from './healingJourney';
+import { getCompanionMemory, getCompanionProfile } from './butterflyCompanion';
 
 export type GentleCheckIn = {
   title: string;
@@ -8,61 +6,25 @@ export type GentleCheckIn = {
 };
 
 export function buildGentleCheckIn(): GentleCheckIn {
-  const journey = getHealingJourney();
+  const memory = getCompanionMemory();
   const profile = getCompanionProfile();
-  const theme = getStrongestTheme();
-  const daysAway = daysSinceLastConversation();
 
-  if (daysAway >= 7) {
+  if (memory.conversationCount === 0) {
     return {
-      title: "We've Missed You",
-      message:
-        "It's been a little while since we talked. Whenever you're ready, I'm here to continue your healing journey with you.",
-    };
-  }
-
-  if (theme === 'Anxiety') {
-    return {
-      title: 'Checking In',
-      message:
-        "You've been working hard on anxiety. How has your heart been feeling since we last talked?",
-    };
-  }
-
-  if (theme === 'Grief') {
-    return {
-      title: 'Thinking of You',
-      message:
-        "Grief can change from day to day. How are you carrying your heart today?",
-    };
-  }
-
-  if (theme === 'Self-Worth') {
-    return {
-      title: 'A Gentle Reminder',
-      message:
-        "Before we begin, remember that your worth has never changed. How have you been speaking to yourself lately?",
+      title: 'Welcome In',
+      message: 'I am glad you are here. What has your heart been carrying today?',
     };
   }
 
   if (profile.victories.length > 0) {
     return {
-      title: 'Celebrating Progress',
-      message: `I've been thinking about your recent victory: "${profile.victories.at(-1)}". How has that progress continued?`,
-    };
-  }
-
-  if (journey.totalConversations >= 10) {
-    return {
-      title: 'Keep Going',
-      message:
-        "You've built a beautiful habit of showing up. What's been on your heart since we last met?",
+      title: 'Celebrating You',
+      message: `Last time, you shared a victory: "${profile.victories.at(-1)}". How does that progress feel today?`,
     };
   }
 
   return {
     title: 'Welcome Back',
-    message:
-      "I'm glad you're here today. What would you like us to work through together?",
+    message: `Last time, we talked about ${memory.lastHealingTheme}. How has your heart been since then?`,
   };
 }

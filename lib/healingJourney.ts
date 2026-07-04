@@ -1,77 +1,107 @@
-export type HealingTheme =
-  | 'Anxiety'
-  | 'Grief'
-  | 'Identity'
-  | 'Forgiveness'
-  | 'Shame'
-  | 'Boundaries'
-  | 'Purpose'
-  | 'Relationships'
-  | 'Faith'
-  | 'Self-Worth'
-  | 'Unknown';
+export type JourneyStage =
+  | 'Beginning'
+  | 'Growing'
+  | 'Healing'
+  | 'Thriving';
 
-export type HealingJourney = {
+export interface HealingJourney {
+  stage: JourneyStage;
+  totalCheckIns: number;
   totalConversations: number;
-  totalExercises: number;
   totalPrayers: number;
-  themes: Record<HealingTheme, number>;
-  lastTheme: HealingTheme;
-  updatedAt: string;
-};
+  totalJournalEntries: number;
+  dominantTheme: string;
+}
 
 let journey: HealingJourney = {
+  stage: 'Beginning',
+  totalCheckIns: 0,
   totalConversations: 0,
-  totalExercises: 0,
   totalPrayers: 0,
-  themes: {
-    Anxiety: 0,
-    Grief: 0,
-    Identity: 0,
-    Forgiveness: 0,
-    Shame: 0,
-    Boundaries: 0,
-    Purpose: 0,
-    Relationships: 0,
-    Faith: 0,
-    'Self-Worth': 0,
-    Unknown: 0,
-  },
-  lastTheme: 'Unknown',
-  updatedAt: new Date().toISOString(),
+  totalJournalEntries: 0,
+  dominantTheme: 'none',
 };
 
-export function getHealingJourney() {
+export function getHealingJourney(): HealingJourney {
   return journey;
 }
 
-export function recordHealingTheme(theme: HealingTheme) {
-  journey.totalConversations += 1;
-  journey.themes[theme] += 1;
-  journey.lastTheme = theme;
-  journey.updatedAt = new Date().toISOString();
+export function getStrongestTheme(): string {
+  return journey.dominantTheme;
 }
 
-export function recordExerciseCompleted() {
-  journey.totalExercises += 1;
-  journey.updatedAt = new Date().toISOString();
+export function recordCheckIn(theme: string) {
+  journey = {
+    ...journey,
+    totalCheckIns: journey.totalCheckIns + 1,
+    totalConversations: journey.totalConversations + 1,
+    dominantTheme: theme,
+  };
+
+  updateJourneyStage();
 }
 
-export function recordPrayerCompleted() {
-  journey.totalPrayers += 1;
-  journey.updatedAt = new Date().toISOString();
+export function recordConversation(theme: string) {
+  journey = {
+    ...journey,
+    totalConversations: journey.totalConversations + 1,
+    dominantTheme: theme,
+  };
+
+  updateJourneyStage();
 }
 
-export function getStrongestTheme(): HealingTheme {
-  let strongest: HealingTheme = 'Unknown';
-  let highest = 0;
+export function recordPrayer() {
+  journey = {
+    ...journey,
+    totalPrayers: journey.totalPrayers + 1,
+  };
 
-  Object.entries(journey.themes).forEach(([theme, count]) => {
-    if (count > highest) {
-      highest = count;
-      strongest = theme as HealingTheme;
-    }
-  });
+  updateJourneyStage();
+}
 
-  return strongest;
+export function recordJournalEntry() {
+  journey = {
+    ...journey,
+    totalJournalEntries: journey.totalJournalEntries + 1,
+  };
+
+  updateJourneyStage();
+}
+
+function updateJourneyStage() {
+  const score =
+    journey.totalCheckIns +
+    journey.totalConversations +
+    journey.totalPrayers +
+    journey.totalJournalEntries;
+
+  if (score >= 100) {
+    journey.stage = 'Thriving';
+  } else if (score >= 50) {
+    journey.stage = 'Healing';
+  } else if (score >= 15) {
+    journey.stage = 'Growing';
+  } else {
+    journey.stage = 'Beginning';
+  }
+}
+
+export function buildJourneyMessage(): string {
+  switch (journey.stage) {
+    case 'Beginning':
+      return 'Every healing journey starts with one honest step. Thank you for beginning yours.';
+
+    case 'Growing':
+      return 'You are building healthy habits. Growth may feel slow, but it is happening.';
+
+    case 'Healing':
+      return 'Your consistency is creating real change. Keep leaning into the healing process.';
+
+    case 'Thriving':
+      return 'Look how far you have come. Continue walking in freedom and helping others find hope.';
+
+    default:
+      return 'Keep moving forward one day at a time.';
+  }
 }
