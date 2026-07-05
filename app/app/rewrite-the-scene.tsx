@@ -91,6 +91,25 @@ export default function RewriteTheSceneScreen() {
     }
   }
 
+  function getGuidance() {
+    switch (step) {
+      case 1:
+        return 'Go slowly. You do not have to tell every detail. Just name enough so your heart knows what memory you are working with.';
+      case 2:
+        return 'This helps Butterfly understand the younger part of you that needed care, safety, and protection.';
+      case 3:
+        return 'There is no wrong answer here. Fear, anger, sadness, confusion, shame, or numbness all count.';
+      case 4:
+        return 'Think about what your heart needed most: comfort, protection, truth, an apology, a safe adult, or someone to believe you.';
+      case 5:
+        return 'This is where the memory begins to change. Imagine someone stepping in with strength, love, and wisdom.';
+      case 6:
+        return 'Let this ending become safe and truthful. You are not changing the facts. You are giving your heart the care it should have received.';
+      default:
+        return '';
+    }
+  }
+
   function getCurrentAnswer() {
     return responses[getStepKey()];
   }
@@ -103,8 +122,8 @@ export default function RewriteTheSceneScreen() {
         <Text style={styles.title}>Rewrite the Scene</Text>
 
         <Text style={styles.subtitle}>
-          This exercise gently helps you revisit a difficult memory and
-          imagine it ending with safety, truth, and hope.
+          This exercise gently helps you revisit a difficult memory and imagine
+          it ending with safety, truth, and hope.
         </Text>
 
         <View style={styles.progressBackground}>
@@ -121,6 +140,11 @@ export default function RewriteTheSceneScreen() {
         <Text style={styles.stepText}>
           Step {step} of {totalSteps}
         </Text>
+
+        <View style={styles.guidanceCard}>
+          <Text style={styles.guidanceTitle}>Butterfly Guidance</Text>
+          <Text style={styles.guidanceText}>{getGuidance()}</Text>
+        </View>
 
         <View style={styles.card}>
           <Text style={styles.question}>{getQuestion()}</Text>
@@ -162,10 +186,7 @@ export default function RewriteTheSceneScreen() {
             <SummaryItem label="Age" value={responses.age} />
             <SummaryItem label="Emotions" value={responses.emotions} />
             <SummaryItem label="What you needed" value={responses.need} />
-            <SummaryItem
-              label="Protection"
-              value={responses.protection}
-            />
+            <SummaryItem label="Protection" value={responses.protection} />
             <SummaryItem
               label="Rewritten ending"
               value={responses.rewrittenEnding}
@@ -238,6 +259,23 @@ const styles = StyleSheet.create({
     color: '#8B7A90',
     fontSize: 14,
     marginBottom: 20,
+  },
+  guidanceCard: {
+    backgroundColor: '#EFE7F7',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 18,
+  },
+  guidanceTitle: {
+    color: '#4B1D7A',
+    fontSize: 15,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  guidanceText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 22,
   },
   card: {
     backgroundColor: '#FFFFFF',
