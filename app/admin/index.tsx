@@ -2,7 +2,6 @@ import { Link } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import HealingDashboard from '../../components/butterfly/HealingDashboard';
-
 export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
