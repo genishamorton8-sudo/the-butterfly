@@ -1,34 +1,55 @@
 import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import HealingDashboard from '../../components/butterfly/HealingDashboard';
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return 'Good morning';
+  if (hour < 5) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
         <Text style={styles.kicker}>The Butterfly</Text>
-        <Text style={styles.title}>Welcome Home</Text>
+        <Text style={styles.title}>{getGreeting()}</Text>
         <Text style={styles.subtitle}>
-          A gentle space to check in, pray, reflect, and keep healing one step at a time.
+          How is your heart today? Take one gentle step toward healing.
         </Text>
       </View>
 
       <HealingDashboard />
+
+      <View style={styles.encouragementCard}>
+        <Text style={styles.encouragementTitle}>Today’s Encouragement</Text>
+        <Text style={styles.encouragementText}>
+          You do not have to fix everything today. Just show up honestly and take the next right step.
+        </Text>
+      </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>What do you need today?</Text>
 
         <Link href="/ai-companion" asChild>
           <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Talk to Butterfly</Text>
+            <Text style={styles.primaryButtonText}>Continue Conversation</Text>
           </TouchableOpacity>
         </Link>
 
         <View style={styles.grid}>
           <HomeCard title="Healing Journey" text="See your growth." />
-          <HomeCard title="Prayer" text="Pause and pray." />
-          <HomeCard title="Scripture" text="Hold onto truth." />
-          <HomeCard title="Garden" text="Grow with care." />
+          <HomeCard title="Prayer Room" text="Pause and pray." />
+          <HomeCard title="Scripture Vault" text="Hold onto truth." />
+          <HomeCard title="Healing Garden" text="Grow with care." />
         </View>
       </View>
     </ScrollView>
@@ -82,6 +103,25 @@ const styles = StyleSheet.create({
     color: '#F7EFFF',
     fontSize: 16,
     lineHeight: 24,
+  },
+  encouragementCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 26,
+    padding: 20,
+    marginBottom: 18,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
+  },
+  encouragementTitle: {
+    color: '#4B1D7A',
+    fontSize: 20,
+    fontWeight: '900',
+    marginBottom: 8,
+  },
+  encouragementText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 23,
   },
   section: {
     backgroundColor: '#FFFFFF',
