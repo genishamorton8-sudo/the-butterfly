@@ -1,110 +1,128 @@
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-function AdminCard({
-  title,
-  subtitle,
-  emoji,
-  onPress,
-}: {
-  title: string;
-  subtitle: string;
-  emoji: string;
-  onPress: () => void;
-}) {
+import HealingDashboard from '../../components/butterfly/HealingDashboard';
+
+export default function HomeScreen() {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text style={styles.emoji}>{emoji}</Text>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardSubtitle}>{subtitle}</Text>
-    </TouchableOpacity>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <View style={styles.hero}>
+        <Text style={styles.kicker}>The Butterfly</Text>
+        <Text style={styles.title}>Welcome Home</Text>
+        <Text style={styles.subtitle}>
+          A gentle space to check in, pray, reflect, and keep healing one step at a time.
+        </Text>
+      </View>
+
+      <HealingDashboard />
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>What do you need today?</Text>
+
+        <Link href="/ai-companion" asChild>
+          <TouchableOpacity style={styles.primaryButton}>
+            <Text style={styles.primaryButtonText}>Talk to Butterfly</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <View style={styles.grid}>
+          <HomeCard title="Healing Journey" text="See your growth." />
+          <HomeCard title="Prayer" text="Pause and pray." />
+          <HomeCard title="Scripture" text="Hold onto truth." />
+          <HomeCard title="Garden" text="Grow with care." />
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
-export default function AdminHome() {
+type HomeCardProps = {
+  title: string;
+  text: string;
+};
+
+function HomeCard({ title, text }: HomeCardProps) {
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={styles.title}>🦋 Butterfly Care</Text>
-
-      <Text style={styles.subtitle}>
-        Welcome to your administrative dashboard.
-      </Text>
-
-      <AdminCard
-        emoji="👥"
-        title="Members"
-        subtitle="View and manage community members."
-        onPress={() => router.push('/admin/members')}
-      />
-
-      <AdminCard
-        emoji="🤝"
-        title="Assign Butterfly Partner"
-        subtitle="Match members with prayer partners."
-        onPress={() => router.push('/admin/assign-partner')}
-      />
-
-      <AdminCard
-        emoji="🦋"
-        title="Founding Butterflies"
-        subtitle="Review and approve beta applications."
-        onPress={() => router.push('/admin/founding-butterflies')}
-      />
-    </ScrollView>
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>{title}</Text>
+      <Text style={styles.cardText}>{text}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FFF9F3',
+    backgroundColor: '#FFF8F2',
   },
   content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  hero: {
+    backgroundColor: '#4B1D7A',
+    borderRadius: 30,
     padding: 24,
-    paddingTop: 60,
-    paddingBottom: 100,
+    marginBottom: 18,
+  },
+  kicker: {
+    color: '#D4AF37',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 8,
   },
   title: {
+    color: '#FFFFFF',
     fontSize: 34,
     fontWeight: '900',
-    color: '#4B1D7A',
-    textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
+    color: '#F7EFFF',
     fontSize: 16,
-    color: '#E75480',
-    textAlign: 'center',
-    marginBottom: 30,
-    fontWeight: '700',
+    lineHeight: 24,
+  },
+  section: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 26,
+    padding: 20,
+  },
+  sectionTitle: {
+    color: '#4B1D7A',
+    fontSize: 22,
+    fontWeight: '900',
+    marginBottom: 15,
+  },
+  primaryButton: {
+    backgroundColor: '#E75480',
+    borderRadius: 18,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  grid: {
+    gap: 12,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-    padding: 20,
-    marginBottom: 18,
-    alignItems: 'center',
-  },
-  emoji: {
-    fontSize: 42,
-    marginBottom: 10,
+    backgroundColor: '#FFF8F2',
+    borderRadius: 18,
+    padding: 15,
   },
   cardTitle: {
-    fontSize: 20,
+    color: '#3F2A4D',
+    fontSize: 17,
     fontWeight: '900',
-    color: '#4B1D7A',
-    marginBottom: 6,
-    textAlign: 'center',
+    marginBottom: 4,
   },
-  cardSubtitle: {
-    fontSize: 15,
-    color: '#555',
-    textAlign: 'center',
-    lineHeight: 22,
+  cardText: {
+    color: '#8B7A90',
+    fontSize: 14,
   },
 });
