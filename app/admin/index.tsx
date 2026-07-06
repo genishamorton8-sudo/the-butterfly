@@ -12,7 +12,7 @@ function getGreeting() {
   const hour = new Date().getHours();
 
   if (hour < 12) return 'Good morning';
-  if (hour < 5) return 'Good afternoon';
+  if (hour < 17) return 'Good afternoon';
   return 'Good evening';
 }
 
@@ -42,6 +42,12 @@ export default function HomeScreen() {
         <Link href="/ai-companion" asChild>
           <TouchableOpacity style={styles.primaryButton}>
             <Text style={styles.primaryButtonText}>Continue Conversation</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link href="/rewrite-the-scene" asChild>
+          <TouchableOpacity style={styles.primaryButton}>
+            <Text style={styles.primaryButtonText}>Rewrite the Scene</Text>
           </TouchableOpacity>
         </Link>
 
