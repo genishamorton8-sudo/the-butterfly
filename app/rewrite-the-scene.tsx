@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import ChoiceSelector from '../components/healing/ChoiceSelector';
@@ -15,6 +15,9 @@ import GroundingExercise from '../components/healing/GroundingExercise';
 import GuidedQuestion from '../components/healing/GuidedQuestion';
 import RewriteWelcome from '../components/healing/RewriteWelcome';
 import SafetyCheck from '../components/healing/SafetyCheck';
+import {
+  incrementSessionCount, updateSessionMemory,
+} from '../lib/butterflySessionMemory';
 
 type Screen = 'welcome' | 'safety' | 'grounding' | 'session' | 'complete';
 
@@ -305,7 +308,17 @@ export default function RewriteTheSceneScreen() {
             reflection={buildReflection()}
             onPray={() => {}}
             onJournal={() => {}}
-            onSave={() => {}}
+            onSave={() => {
+  incrementSessionCount();
+
+  updateSessionMemory({
+    lastSession: new Date().toLocaleDateString(),
+    favoriteHealingTheme: 'Rewrite the Scene',
+    lastEmotion: primaryEmotion(),
+  });
+
+  router.push('/');
+}}
             onHome={() => router.push('/')}
           />
         )}
