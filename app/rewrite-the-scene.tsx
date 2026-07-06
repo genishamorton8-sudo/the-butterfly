@@ -15,9 +15,12 @@ import GroundingExercise from '../components/healing/GroundingExercise';
 import GuidedQuestion from '../components/healing/GuidedQuestion';
 import RewriteWelcome from '../components/healing/RewriteWelcome';
 import SafetyCheck from '../components/healing/SafetyCheck';
+
 import {
-  incrementSessionCount, updateSessionMemory,
+  incrementSessionCount,
+  updateSessionMemory,
 } from '../lib/butterflySessionMemory';
+import { addHealingMilestone } from '../lib/healingMilestones';
 
 type Screen = 'welcome' | 'safety' | 'grounding' | 'session' | 'complete';
 
@@ -133,6 +136,24 @@ export default function RewriteTheSceneScreen() {
     return 'Today you slowed down, listened to your heart, and gave yourself space to imagine safety, truth, and care. That is a meaningful healing step.';
   }
 
+  function saveHealingSession() {
+    incrementSessionCount();
+
+    updateSessionMemory({
+      lastSession: new Date().toLocaleDateString(),
+      favoriteHealingTheme: 'Rewrite the Scene',
+      lastEmotion: primaryEmotion(),
+    });
+
+    addHealingMilestone(
+      'Completed Rewrite the Scene',
+      `Worked through ${primaryEmotion()} and practiced a new ending.`,
+      'Healing Session'
+    );
+
+    router.push('/');
+  }
+
   function renderSessionStep() {
     if (step === 0) {
       return (
@@ -141,7 +162,7 @@ export default function RewriteTheSceneScreen() {
           guidance="Do not choose the biggest wound first. Choose something your heart feels ready to revisit."
           affirmation="You are not reliving this alone. Butterfly is walking with you one gentle step at a time."
           value={responses.memory}
-          onChangeText={(text) =>
+          onChangeText={(text: string) =>
             setResponses((current) => ({ ...current, memory: text }))
           }
           placeholder="What memory came to mind?"
@@ -156,7 +177,7 @@ export default function RewriteTheSceneScreen() {
           guidance="You do not have to be exact. Even an estimate is enough."
           affirmation="This helps us notice the younger part of you that needed care, safety, and protection."
           value={responses.age}
-          onChangeText={(text) =>
+          onChangeText={(text: string) =>
             setResponses((current) => ({ ...current, age: text }))
           }
           placeholder="I was about..."
@@ -171,7 +192,7 @@ export default function RewriteTheSceneScreen() {
           guidance="Choose anything that fits. Nothing is wrong with you for feeling it."
           options={emotions}
           selected={responses.emotions}
-          onToggle={(value) => toggleList('emotions', value)}
+          onToggle={(value: string) => toggleList('emotions', value)}
         />
       );
     }
@@ -183,7 +204,7 @@ export default function RewriteTheSceneScreen() {
           guidance="Think about what your younger self needed most in that moment."
           options={needs}
           selected={responses.needs}
-          onToggle={(value) => toggleList('needs', value)}
+          onToggle={(value: string) => toggleList('needs', value)}
         />
       );
     }
@@ -194,11 +215,9 @@ export default function RewriteTheSceneScreen() {
           title="Who would you want beside you?"
           guidance="Imagine that younger version of you is no longer alone."
           options={supportOptions}
-          selected={
-            responses.supportPerson ? [responses.supportPerson] : []
-          }
+          selected={responses.supportPerson ? [responses.supportPerson] : []}
           multiple={false}
-          onToggle={(value) =>
+          onToggle={(value: string) =>
             setResponses((current) => ({
               ...current,
               supportPerson: value,
@@ -214,7 +233,7 @@ export default function RewriteTheSceneScreen() {
         guidance="You are not pretending it never happened. You are giving your heart what it deserved: safety, truth, and care."
         affirmation="You are allowed to imagine protection. You are allowed to imagine comfort. You are allowed to imagine a different ending for your heart."
         value={responses.rewrittenEnding}
-        onChangeText={(text) =>
+        onChangeText={(text: string) =>
           setResponses((current) => ({
             ...current,
             rewrittenEnding: text,
@@ -308,17 +327,7 @@ export default function RewriteTheSceneScreen() {
             reflection={buildReflection()}
             onPray={() => {}}
             onJournal={() => {}}
-            onSave={() => {
-  incrementSessionCount();
-
-  updateSessionMemory({
-    lastSession: new Date().toLocaleDateString(),
-    favoriteHealingTheme: 'Rewrite the Scene',
-    lastEmotion: primaryEmotion(),
-  });
-
-  router.push('/');
-}}
+            onSave={saveHealingSession}
             onHome={() => router.push('/')}
           />
         )}
