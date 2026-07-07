@@ -1,6 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { buildGentleCheckIn } from '../../lib/gentleCheckIns';
 
 type Message = {
@@ -21,6 +28,32 @@ export default function AICompanionScreen() {
     },
   ]);
 
+  function buildResponse(input: string) {
+    const text = input.toLowerCase();
+
+    if (text.includes('anxious') || text.includes('anxiety')) {
+      return 'Thank you for trusting me with that. Anxiety can feel overwhelming. Would you like to pray together, journal about it, or try a grounding exercise?';
+    }
+
+    if (text.includes('sad')) {
+      return 'I am sorry you are carrying that sadness. You do not have to carry it alone. Would you like to write about what happened or spend a moment in prayer?';
+    }
+
+    if (text.includes('angry') || text.includes('mad')) {
+      return 'It sounds like something has hurt or frustrated you. Let’s understand what happened before we decide what to do next.';
+    }
+
+    if (text.includes('hurt')) {
+      return 'Thank you for telling me. Being hurt can affect us deeply. Would it help to work through a healing exercise together?';
+    }
+
+    if (text.includes('afraid') || text.includes('fear')) {
+      return 'Fear often grows when we feel alone. I am here with you. Let’s take one small step together.';
+    }
+
+    return 'Thank you for sharing that with me. Tell me a little more so I can better understand what you are experiencing.';
+  }
+
   function sendMessage() {
     if (!message.trim()) {
       return;
@@ -35,7 +68,7 @@ export default function AICompanionScreen() {
     const butterflyMessage: Message = {
       id: Date.now() + 1,
       sender: 'butterfly',
-      text: 'Thank you for sharing that with me. Let’s slow down and take this one step at a time.',
+      text: buildResponse(message),
     };
 
     setMessages((currentMessages) => [
@@ -57,11 +90,7 @@ export default function AICompanionScreen() {
         </Text>
       </View>
 
-      <HealingCard
-        icon="heart-outline"
-        title={gentleCheckIn.title}
-        text={gentleCheckIn.message}
-      />
+      <HealingCard icon="heart-outline" title={gentleCheckIn.title} text={gentleCheckIn.message} />
 
       <HealingCard
         icon="leaf"
@@ -133,14 +162,8 @@ function HealingCard({ icon, title, text }: HealingCardProps) {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFF9F3',
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
+  screen: { flex: 1, backgroundColor: '#FFF9F3' },
+  content: { padding: 20, paddingBottom: 40 },
   hero: {
     backgroundColor: '#FFFFFF',
     borderRadius: 28,
@@ -172,22 +195,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E8DFF0',
   },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   cardTitle: {
     color: '#4B1D7A',
     fontSize: 18,
     fontWeight: '900',
     marginLeft: 10,
   },
-  cardText: {
-    color: '#3F2A4D',
-    fontSize: 15,
-    lineHeight: 23,
-  },
+  cardText: { color: '#3F2A4D', fontSize: 15, lineHeight: 23 },
   chatBox: {
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
@@ -202,22 +217,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginBottom: 12,
   },
-  messageBubble: {
-    borderRadius: 18,
-    padding: 12,
-    marginBottom: 10,
-  },
-  butterflyBubble: {
-    backgroundColor: '#F4EAF8',
-  },
-  userBubble: {
-    backgroundColor: '#FFE4EC',
-  },
-  messageText: {
-    color: '#3F2A4D',
-    fontSize: 15,
-    lineHeight: 22,
-  },
+  messageBubble: { borderRadius: 18, padding: 12, marginBottom: 10 },
+  butterflyBubble: { backgroundColor: '#F4EAF8' },
+  userBubble: { backgroundColor: '#FFE4EC' },
+  messageText: { color: '#3F2A4D', fontSize: 15, lineHeight: 22 },
   input: {
     backgroundColor: '#FFF9F3',
     borderRadius: 16,
@@ -235,9 +238,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 14,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '900',
-  },
+  buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '900' },
 });
