@@ -1,8 +1,9 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+
 import { auth } from '../../lib/firebase';
 
 export default function TabLayout() {
@@ -55,27 +56,25 @@ export default function TabLayout() {
         },
       }}
     >
-      {/* Visible Tabs */}
-
       <Tabs.Screen
         name="dashboard"
         options={{
           title: 'Home',
-          tabBarIcon: ({ size }) => (
-            <Ionicons name="home" size={size} color="#E75480" />
+          tabBarIcon: ({ size, color }) => (
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="today-word"
+        name="healing-exercises"
         options={{
-          title: 'Word',
-          tabBarIcon: ({ size }) => (
+          title: 'Heal',
+          tabBarIcon: ({ size, color }) => (
             <MaterialCommunityIcons
-              name="book-open-page-variant"
+              name="heart-plus"
               size={size}
-              color="#E75480"
+              color={color}
             />
           ),
         }}
@@ -85,11 +84,11 @@ export default function TabLayout() {
         name="healing-journal"
         options={{
           title: 'Journal',
-          tabBarIcon: ({ size }) => (
+          tabBarIcon: ({ size, color }) => (
             <MaterialCommunityIcons
               name="notebook-edit"
               size={size}
-              color="#E75480"
+              color={color}
             />
           ),
         }}
@@ -99,35 +98,30 @@ export default function TabLayout() {
         name="garden"
         options={{
           title: 'Garden',
-          tabBarIcon: ({ size }) => (
-            <MaterialCommunityIcons
-              name="sprout"
-              size={size}
-              color="#E75480"
-            />
+          tabBarIcon: ({ size, color }) => (
+            <MaterialCommunityIcons name="sprout" size={size} color={color} />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="testimonials"
+        name="today-word"
         options={{
-          title: 'Stories',
-          tabBarIcon: ({ size }) => (
+          title: 'Word',
+          tabBarIcon: ({ size, color }) => (
             <MaterialCommunityIcons
-              name="butterfly"
+              name="book-open-page-variant"
               size={size}
-              color="#E75480"
+              color={color}
             />
           ),
         }}
       />
 
-      {/* Hidden Screens */}
-
+      <Tabs.Screen name="index" options={{ href: null }} />
+      <Tabs.Screen name="journey" options={{ href: null }} />
       <Tabs.Screen name="journal" options={{ href: null }} />
       <Tabs.Screen name="daily-journey" options={{ href: null }} />
-      <Tabs.Screen name="journey" options={{ href: null }} />
       <Tabs.Screen name="mood" options={{ href: null }} />
       <Tabs.Screen name="mood-response" options={{ href: null }} />
       <Tabs.Screen name="egg-activity" options={{ href: null }} />
@@ -135,7 +129,6 @@ export default function TabLayout() {
       <Tabs.Screen name="upload-selfie" options={{ href: null }} />
       <Tabs.Screen name="accountability" options={{ href: null }} />
       <Tabs.Screen name="connect-partner" options={{ href: null }} />
-      <Tabs.Screen name="healing-exercises" options={{ href: null }} />
       <Tabs.Screen name="change-the-thought" options={{ href: null }} />
       <Tabs.Screen name="rewrite-scene" options={{ href: null }} />
       <Tabs.Screen name="meet-younger-me" options={{ href: null }} />
@@ -143,9 +136,7 @@ export default function TabLayout() {
       <Tabs.Screen name="mirror-truth" options={{ href: null }} />
       <Tabs.Screen name="letters-never-sent" options={{ href: null }} />
       <Tabs.Screen name="future-self" options={{ href: null }} />
-
-      {/* Hide ALL extra tabs */}
-
+      <Tabs.Screen name="testimonials" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="skin-tone" options={{ href: null }} />
       <Tabs.Screen name="bug-report" options={{ href: null }} />
@@ -153,8 +144,6 @@ export default function TabLayout() {
       <Tabs.Screen name="beta-center" options={{ href: null }} />
       <Tabs.Screen name="announcements" options={{ href: null }} />
       <Tabs.Screen name="feature-request" options={{ href: null }} />
-
-      <Tabs.Screen name="index" options={{ href: null }} />
     </Tabs>
   );
 }
