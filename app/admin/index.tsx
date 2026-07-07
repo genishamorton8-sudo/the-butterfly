@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import HealingDashboard from '../../components/butterfly/HealingDashboard';
+
 function getGreeting() {
   const hour = new Date().getHours();
 
@@ -16,7 +17,7 @@ function getGreeting() {
   return 'Good evening';
 }
 
-export default function HomeScreen() {
+export default function AdminHomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
@@ -29,25 +30,12 @@ export default function HomeScreen() {
 
       <HealingDashboard />
 
-      <View style={styles.encouragementCard}>
-        <Text style={styles.encouragementTitle}>Today’s Encouragement</Text>
-        <Text style={styles.encouragementText}>
-          You do not have to fix everything today. Just show up honestly and take the next right step.
-        </Text>
-      </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>What do you need today?</Text>
 
         <Link href="/ai-companion" asChild>
           <TouchableOpacity style={styles.primaryButton}>
             <Text style={styles.primaryButtonText}>Continue Conversation</Text>
-          </TouchableOpacity>
-        </Link>
-
-        <Link href="/rewrite-the-scene" asChild>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Rewrite the Scene</Text>
           </TouchableOpacity>
         </Link>
 
@@ -77,14 +65,8 @@ function HomeCard({ title, text }: HomeCardProps) {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#FFF8F2',
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
+  screen: { flex: 1, backgroundColor: '#FFF8F2' },
+  content: { padding: 20, paddingBottom: 40 },
   hero: {
     backgroundColor: '#4B1D7A',
     borderRadius: 30,
@@ -105,30 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginBottom: 10,
   },
-  subtitle: {
-    color: '#F7EFFF',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  encouragementCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 26,
-    padding: 20,
-    marginBottom: 18,
-    borderWidth: 2,
-    borderColor: '#D4AF37',
-  },
-  encouragementTitle: {
-    color: '#4B1D7A',
-    fontSize: 20,
-    fontWeight: '900',
-    marginBottom: 8,
-  },
-  encouragementText: {
-    color: '#3F2A4D',
-    fontSize: 15,
-    lineHeight: 23,
-  },
+  subtitle: { color: '#F7EFFF', fontSize: 16, lineHeight: 24 },
   section: {
     backgroundColor: '#FFFFFF',
     borderRadius: 26,
@@ -152,9 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '900',
   },
-  grid: {
-    gap: 12,
-  },
+  grid: { gap: 12 },
   card: {
     backgroundColor: '#FFF8F2',
     borderRadius: 18,
@@ -166,8 +123,5 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginBottom: 4,
   },
-  cardText: {
-    color: '#8B7A90',
-    fontSize: 14,
-  },
+  cardText: { color: '#8B7A90', fontSize: 14 },
 });
