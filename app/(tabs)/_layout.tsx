@@ -71,11 +71,7 @@ export default function TabLayout() {
         options={{
           title: 'Heal',
           tabBarIcon: ({ size, color }) => (
-            <MaterialCommunityIcons
-              name="heart-plus"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="heart-plus" size={size} color={color} />
           ),
         }}
       />
@@ -105,15 +101,11 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="today-word"
+        name="ai-companion"
         options={{
-          title: 'Word',
+          title: 'Butterfly',
           tabBarIcon: ({ size, color }) => (
-            <MaterialCommunityIcons
-              name="book-open-page-variant"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="butterfly" size={size} color={color} />
           ),
         }}
       />
