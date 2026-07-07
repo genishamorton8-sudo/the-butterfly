@@ -20,6 +20,7 @@ export default function AICompanionScreen() {
   const gentleCheckIn = buildGentleCheckIn();
 
   const [message, setMessage] = useState('');
+  const [lastEmotion, setLastEmotion] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -28,26 +29,46 @@ export default function AICompanionScreen() {
     },
   ]);
 
-  function buildResponse(input: string) {
+  function detectEmotion(input: string) {
     const text = input.toLowerCase();
 
-    if (text.includes('anxious') || text.includes('anxiety')) {
+    if (text.includes('anxious') || text.includes('anxiety')) return 'anxiety';
+    if (text.includes('sad')) return 'sadness';
+    if (text.includes('angry') || text.includes('mad')) return 'anger';
+    if (text.includes('hurt')) return 'hurt';
+    if (text.includes('afraid') || text.includes('fear')) return 'fear';
+
+    return null;
+  }
+
+  function buildResponse(input: string) {
+    const emotion = detectEmotion(input);
+
+    if (emotion) {
+      setLastEmotion(emotion);
+    }
+
+    if (!emotion && lastEmotion) {
+      return `Earlier you shared something connected to ${lastEmotion}. I am still holding that with care. Tell me more about what is happening now.`;
+    }
+
+    if (emotion === 'anxiety') {
       return 'Thank you for trusting me with that. Anxiety can feel overwhelming. Would you like to pray together, journal about it, or try a grounding exercise?';
     }
 
-    if (text.includes('sad')) {
+    if (emotion === 'sadness') {
       return 'I am sorry you are carrying that sadness. You do not have to carry it alone. Would you like to write about what happened or spend a moment in prayer?';
     }
 
-    if (text.includes('angry') || text.includes('mad')) {
+    if (emotion === 'anger') {
       return 'It sounds like something has hurt or frustrated you. Let’s understand what happened before we decide what to do next.';
     }
 
-    if (text.includes('hurt')) {
+    if (emotion === 'hurt') {
       return 'Thank you for telling me. Being hurt can affect us deeply. Would it help to work through a healing exercise together?';
     }
 
-    if (text.includes('afraid') || text.includes('fear')) {
+    if (emotion === 'fear') {
       return 'Fear often grows when we feel alone. I am here with you. Let’s take one small step together.';
     }
 
@@ -90,7 +111,11 @@ export default function AICompanionScreen() {
         </Text>
       </View>
 
-      <HealingCard icon="heart-outline" title={gentleCheckIn.title} text={gentleCheckIn.message} />
+      <HealingCard
+        icon="heart-outline"
+        title={gentleCheckIn.title}
+        text={gentleCheckIn.message}
+      />
 
       <HealingCard
         icon="leaf"
@@ -109,6 +134,15 @@ export default function AICompanionScreen() {
         title="Prayer"
         text="Father, guide my healing today. Help me feel safe, seen, and strengthened. Amen."
       />
+
+      {lastEmotion && (
+        <View style={styles.memoryCard}>
+          <Text style={styles.memoryTitle}>Butterfly remembers</Text>
+          <Text style={styles.memoryText}>
+            Today, your heart has been carrying {lastEmotion}.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.chatBox}>
         <Text style={styles.chatTitle}>Continue Conversation</Text>
@@ -203,6 +237,25 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   cardText: { color: '#3F2A4D', fontSize: 15, lineHeight: 23 },
+  memoryCard: {
+    backgroundColor: '#FFF3D6',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#D4AF37',
+  },
+  memoryTitle: {
+    color: '#4B1D7A',
+    fontSize: 18,
+    fontWeight: '900',
+    marginBottom: 6,
+  },
+  memoryText: {
+    color: '#3F2A4D',
+    fontSize: 15,
+    lineHeight: 22,
+  },
   chatBox: {
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
