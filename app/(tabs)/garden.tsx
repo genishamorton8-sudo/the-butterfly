@@ -13,13 +13,24 @@ import {
   getGardenStage,
   resetGarden,
 } from '../../lib/garden';
+import { getJournal } from '../../lib/journal';
+import { getProgress } from '../../lib/progress';
 
 export default function GardenScreen() {
   const [growth, setGrowth] = useState(0);
+  const [journalCount, setJournalCount] = useState(0);
+  const [healingSteps, setHealingSteps] = useState(0);
+  const [streak, setStreak] = useState(0);
 
   async function loadGarden() {
     const garden = await getGarden();
+    const journal = await getJournal();
+    const progress = await getProgress();
+
     setGrowth(garden.growth);
+    setJournalCount(journal.length);
+    setHealingSteps(progress.butterflySteps);
+    setStreak(progress.streak);
   }
 
   useFocusEffect(
@@ -29,9 +40,9 @@ export default function GardenScreen() {
   );
 
   const stage = getGardenStage(growth);
-  const nextMilestone =
-    growth < 25 ? 25 : growth < 75 ? 75 : growth < 150 ? 150 : growth < 300 ? 300 : null;
 
+  const milestones = [10, 25, 50, 100, 200, 350, 500];
+  const nextMilestone = milestones.find((milestone) => milestone > growth) ?? null;
   const pointsToNext = nextMilestone ? nextMilestone - growth : 0;
 
   return (
@@ -75,10 +86,22 @@ export default function GardenScreen() {
       </View>
 
       <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Healing Progress</Text>
+
+        <Text style={styles.progress}>🦋 Butterfly Steps: {healingSteps}</Text>
+
+        <Text style={styles.progress}>📝 Journal Entries: {journalCount}</Text>
+
+        <Text style={styles.progress}>🔥 Healing Streak: {streak} days</Text>
+
+        <Text style={styles.progress}>🌱 Garden Growth: {growth}</Text>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.sectionTitle}>What Helps You Grow</Text>
 
         <Text style={styles.progress}>😊 Mood Check: +5</Text>
-        <Text style={styles.progress}>📖 Today’s Word: +5</Text>
+        <Text style={styles.progress}>📖 Today's Word: +5</Text>
         <Text style={styles.progress}>🙏 Prayer: +5</Text>
         <Text style={styles.progress}>📝 Journal: +10</Text>
       </View>

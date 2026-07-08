@@ -75,7 +75,8 @@ export default function AICompanionScreen() {
     return 'Thank you for sharing that with me. Tell me a little more so I can better understand what you are experiencing.';
   }
 
-  function sendMessage() {
+  async function sendMessage() {
+
     if (!message.trim()) {
       return;
     }
