@@ -1,5 +1,6 @@
 import { Link, router } from 'expo-router';
 import {
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,51 +20,53 @@ export default function AdminHomeScreen() {
   const greeting = getGreeting();
 
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-    >
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.push('/(tabs)/dashboard' as any)}
+    <SafeAreaView style={styles.screen}>
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
       >
-        <Text style={styles.backButtonText}>{'‹ Back to Dashboard'}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/(tabs)/dashboard' as any)}
+        >
+          <Text style={styles.backButtonText}>{'‹ Back to Dashboard'}</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.greeting}>{greeting}, Admin</Text>
+        <Text style={styles.greeting}>{greeting}, Admin</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Admin Dashboard
-        </Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            Admin Dashboard
+          </Text>
 
-        <View style={styles.grid}>
-          <AdminCard
-            title="Members"
-            text="View and manage member accounts."
-            href="/admin/members"
-          />
+          <View style={styles.grid}>
+            <AdminCard
+              title="Members"
+              text="View and manage member accounts."
+              href="/admin/members"
+            />
 
-          <AdminCard
-            title="Beta Control Center"
-            text="Manage the 90-day beta program."
-            href="/admin/beta-control"
-          />
+            <AdminCard
+              title="Beta Control Center"
+              text="Manage the 90-day beta program."
+              href="/admin/beta-control"
+            />
 
-          <AdminCard
-            title="Founding Butterflies"
-            text="Review founding member applications."
-            href="/admin/founding-butterflies"
-          />
+            <AdminCard
+              title="Founding Butterflies"
+              text="Review founding member applications."
+              href="/admin/founding-butterflies"
+            />
 
-          <AdminCard
-            title="Bug Reports"
-            text="See reports submitted by users."
-            href="/admin/bug-reports"
-          />
+            <AdminCard
+              title="Bug Reports"
+              text="See reports submitted by users."
+              href="/admin/bug-reports"
+            />
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
