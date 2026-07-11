@@ -265,7 +265,7 @@ export default function DashboardScreen() {
         />
         <HomeButton
           title="Today’s Word"
-          emoji="📖"
+          emoji="📜"
           onPress={() => router.push('/(tabs)/today-word' as any)}
         />
         <HomeButton

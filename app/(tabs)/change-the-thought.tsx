@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
@@ -145,6 +146,13 @@ export default function ChangeTheThoughtScreen() {
             <Text style={styles.finishText}>
               In the next step we'll gently guide you into Rewrite the Scene.
             </Text>
+
+            <TouchableOpacity
+              style={[styles.button, styles.continueButton]}
+              onPress={() => router.push('/(tabs)/rewrite-scene' as any)}
+            >
+              <Text style={styles.buttonText}>Continue to Rewrite the Scene</Text>
+            </TouchableOpacity>
           </>
         )}
       </ScrollView>
@@ -162,6 +170,7 @@ const styles = StyleSheet.create({
   choiceText: { fontSize: 15, color: '#555' },
   input: { backgroundColor: '#FFFFFF', borderRadius: 18, minHeight: 180, padding: 16, textAlignVertical: 'top', marginBottom: 25, borderWidth: 1, borderColor: '#DDD' },
   button: { backgroundColor: '#E75480', padding: 18, borderRadius: 30, alignItems: 'center' },
+  continueButton: { marginTop: 30 },
   buttonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
   finish: { fontSize: 28, color: '#4B1D7A', fontWeight: '900', textAlign: 'center', marginTop: 40 },
   finishText: { fontSize: 17, color: '#555', textAlign: 'center', marginTop: 18, lineHeight: 26 },
