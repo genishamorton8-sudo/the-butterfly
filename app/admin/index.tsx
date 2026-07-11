@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import {
   ScrollView,
   StyleSheet,
@@ -23,6 +23,13 @@ export default function AdminHomeScreen() {
       style={styles.screen}
       contentContainerStyle={styles.content}
     >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.push('/(tabs)/dashboard' as any)}
+      >
+        <Text style={styles.backButtonText}>{'‹ Back to Dashboard'}</Text>
+      </TouchableOpacity>
+
       <Text style={styles.greeting}>{greeting}, Admin</Text>
 
       <View style={styles.section}>
@@ -110,6 +117,17 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '900',
     marginBottom: 16,
+  },
+
+  backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+  },
+
+  backButtonText: {
+    color: '#E75480',
+    fontSize: 16,
+    fontWeight: '800',
   },
 
   grid: {
