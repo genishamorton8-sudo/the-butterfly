@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import { auth } from '../../lib/firebase';
+import { hydrateSessionMemory } from '../../lib/butterflySessionMemory';
+import { hydrateHealingMilestones } from '../../lib/healingMilestones';
 
 export default function TabLayout() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -16,6 +18,13 @@ export default function TabLayout() {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      hydrateSessionMemory();
+      hydrateHealingMilestones();
+    }
+  }, [user]);
 
   if (user === undefined) {
     return (

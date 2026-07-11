@@ -1,14 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+
+import { loadData, saveData } from '../../lib/storage';
 
 const JOURNEY_KEY = '@butterfly_daily_journey';
 
@@ -39,32 +39,23 @@ export default function DailyJourneyScreen() {
   );
 
   async function loadJourney() {
-    try {
-      const savedJourney = await AsyncStorage.getItem(JOURNEY_KEY);
-      if (savedJourney) {
-        setSteps(JSON.parse(savedJourney));
-      }
-    } catch {
-      Alert.alert('Unable to load journey', 'Please close the screen and try again.');
-    } finally {
-      setLoading(false);
+    const savedJourney = await loadData<JourneySteps>(JOURNEY_KEY);
+    if (savedJourney) {
+      setSteps(savedJourney);
     }
+    setLoading(false);
   }
 
   async function completeStep(stepName: keyof JourneySteps) {
     if (steps[stepName]) return;
 
-    try {
-      const updatedSteps = {
-        ...steps,
-        [stepName]: true,
-      };
+    const updatedSteps = {
+      ...steps,
+      [stepName]: true,
+    };
 
-      setSteps(updatedSteps);
-      await AsyncStorage.setItem(JOURNEY_KEY, JSON.stringify(updatedSteps));
-    } catch {
-      Alert.alert('Unable to save progress', 'Please try completing the step again.');
-    }
+    setSteps(updatedSteps);
+    await saveData(JOURNEY_KEY, updatedSteps);
   }
 
   const completedCount = Object.values(steps).filter(Boolean).length;

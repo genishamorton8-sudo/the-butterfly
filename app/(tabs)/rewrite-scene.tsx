@@ -1,166 +1,439 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import ChoiceSelector from '../../components/healing/ChoiceSelector';
+import CompletionScreen from '../../components/healing/CompletionScreen';
+import GroundingExercise from '../../components/healing/GroundingExercise';
+import GuidedQuestion from '../../components/healing/GuidedQuestion';
+import RewriteWelcome from '../../components/healing/RewriteWelcome';
+import SafetyCheck from '../../components/healing/SafetyCheck';
+
+import {
+  incrementSessionCount,
+  updateSessionMemory,
+} from '../../lib/butterflySessionMemory';
+import { addHealingMilestone } from '../../lib/healingMilestones';
 import { addJournalEntry } from '../../lib/journal';
 import { completeExercise } from '../../lib/progress';
 
-export default function RewriteSceneScreen() {
-  const [step, setStep] = useState(1);
+type Screen = 'welcome' | 'safety' | 'grounding' | 'session' | 'complete';
 
-  const [age, setAge] = useState('');
-  const [memory, setMemory] = useState('');
-  const [emotion, setEmotion] = useState('');
-  const [belief, setBelief] = useState('');
-  const [needed, setNeeded] = useState('');
-  const [protector, setProtector] = useState('');
-  const [words, setWords] = useState('');
-  const [changes, setChanges] = useState('');
+type RewriteResponses = {
+  memory: string;
+  age: string;
+  emotions: string[];
+  needs: string[];
+  supportPerson: string;
+  rewrittenEnding: string;
+};
 
-  const totalSteps = 5;
+const emotions = [
+  'Fear',
+  'Shame',
+  'Anger',
+  'Sadness',
+  'Confusion',
+  'Rejected',
+  'Alone',
+];
 
-  async function next() {
-    if (step < totalSteps) {
+const needs = [
+  'Safety',
+  'Protection',
+  'Comfort',
+  'To be believed',
+  'Love',
+  'Justice',
+  'To be rescued',
+];
+
+const supportOptions = [
+  'Jesus',
+  'My current self',
+  'A trusted adult',
+  'Someone safe',
+];
+
+export default function RewriteTheSceneScreen() {
+  const router = useRouter();
+
+  const [screen, setScreen] = useState<Screen>('welcome');
+  const [step, setStep] = useState(0);
+  const [safetyLevel, setSafetyLevel] = useState<number | null>(null);
+
+  const [responses, setResponses] = useState<RewriteResponses>({
+    memory: '',
+    age: '',
+    emotions: [],
+    needs: [],
+    supportPerson: '',
+    rewrittenEnding: '',
+  });
+
+  const totalSteps = 6;
+
+  function toggleList(key: 'emotions' | 'needs', value: string) {
+    setResponses((current) => {
+      const list = current[key];
+
+      return {
+        ...current,
+        [key]: list.includes(value)
+          ? list.filter((item) => item !== value)
+          : [...list, value],
+      };
+    });
+  }
+
+  function nextStep() {
+    if (step < totalSteps - 1) {
       setStep(step + 1);
       return;
     }
+
+    setScreen('complete');
+  }
+
+  function previousStep() {
+    if (step > 0) {
+      setStep(step - 1);
+      return;
+    }
+
+    setScreen('safety');
+  }
+
+  function primaryEmotion() {
+    return responses.emotions[0] ?? 'Not selected';
+  }
+
+  function primaryNeed() {
+    return responses.needs[0] ?? 'Not selected';
+  }
+
+  function buildReflection() {
+    const emotion = primaryEmotion();
+    const need = primaryNeed();
+
+    if (emotion === 'Fear' || need === 'Safety') {
+      return 'It seems like safety mattered deeply in this memory. Thank you for noticing what your heart needed. We can continue helping that part of you feel protected and cared for.';
+    }
+
+    if (emotion === 'Shame' || need === 'To be believed') {
+      return 'Being believed matters. Your story matters. Today you gave your heart space to be heard instead of hidden.';
+    }
+
+    if (emotion === 'Alone' || need === 'Comfort') {
+      return 'It sounds like that younger part of you needed comfort and presence. Today you practiced showing up for that part with care.';
+    }
+
+    return 'Today you slowed down, listened to your heart, and gave yourself space to imagine safety, truth, and care. That is a meaningful healing step.';
+  }
+
+  async function saveHealingSession() {
+    incrementSessionCount();
+
+    updateSessionMemory({
+      lastSession: new Date().toLocaleDateString(),
+      favoriteHealingTheme: 'Rewrite the Scene',
+      lastEmotion: primaryEmotion(),
+    });
+
+    addHealingMilestone(
+      'Completed Rewrite the Scene',
+      `Worked through ${primaryEmotion()} and practiced a new ending.`,
+      'Healing Session'
+    );
 
     await addJournalEntry({
       id: Date.now().toString(),
       title: 'Rewrite the Scene Reflection',
       exercise: 'Rewrite the Scene',
       date: new Date().toISOString(),
-      preview: changes || words || memory || 'A healing scene was rewritten.',
+      preview:
+        responses.rewrittenEnding ||
+        responses.memory ||
+        'A healing scene was rewritten.',
       answers: {
-        age,
-        memory,
-        emotion,
-        belief,
-        needed,
-        protector,
-        words,
-        changes,
+        age: responses.age,
+        memory: responses.memory,
+        emotion: primaryEmotion(),
+        needed: primaryNeed(),
+        protector: responses.supportPerson,
+        words: responses.rewrittenEnding,
       },
     });
 
     await completeExercise('Rewrite the Scene');
 
-    Alert.alert(
-      'Beautiful Work',
-      'Your reflection has been saved to your Healing Journal.'
+    router.push('/');
+  }
+
+  function renderSessionStep() {
+    if (step === 0) {
+      return (
+        <GuidedQuestion
+          title="Choose one memory"
+          guidance="Do not choose the biggest wound first. Choose something your heart feels ready to revisit."
+          affirmation="You are not reliving this alone. Butterfly is walking with you one gentle step at a time."
+          value={responses.memory}
+          onChangeText={(text: string) =>
+            setResponses((current) => ({ ...current, memory: text }))
+          }
+          placeholder="What memory came to mind?"
+        />
+      );
+    }
+
+    if (step === 1) {
+      return (
+        <GuidedQuestion
+          title="About how old were you?"
+          guidance="You do not have to be exact. Even an estimate is enough."
+          affirmation="This helps us notice the younger part of you that needed care, safety, and protection."
+          value={responses.age}
+          onChangeText={(text: string) =>
+            setResponses((current) => ({ ...current, age: text }))
+          }
+          placeholder="I was about..."
+        />
+      );
+    }
+
+    if (step === 2) {
+      return (
+        <ChoiceSelector
+          title="What emotions were present?"
+          guidance="Choose anything that fits. Nothing is wrong with you for feeling it."
+          options={emotions}
+          selected={responses.emotions}
+          onToggle={(value: string) => toggleList('emotions', value)}
+        />
+      );
+    }
+
+    if (step === 3) {
+      return (
+        <ChoiceSelector
+          title="What did you need?"
+          guidance="Think about what your younger self needed most in that moment."
+          options={needs}
+          selected={responses.needs}
+          onToggle={(value: string) => toggleList('needs', value)}
+        />
+      );
+    }
+
+    if (step === 4) {
+      return (
+        <ChoiceSelector
+          title="Who would you want beside you?"
+          guidance="Imagine that younger version of you is no longer alone."
+          options={supportOptions}
+          selected={responses.supportPerson ? [responses.supportPerson] : []}
+          multiple={false}
+          onToggle={(value: string) =>
+            setResponses((current) => ({
+              ...current,
+              supportPerson: value,
+            }))
+          }
+        />
+      );
+    }
+
+    return (
+      <GuidedQuestion
+        title="Rewrite the ending"
+        guidance="You are not pretending it never happened. You are giving your heart what it deserved: safety, truth, and care."
+        affirmation="You are allowed to imagine protection. You are allowed to imagine comfort. You are allowed to imagine a different ending for your heart."
+        value={responses.rewrittenEnding}
+        onChangeText={(text: string) =>
+          setResponses((current) => ({
+            ...current,
+            rewrittenEnding: text,
+          }))
+        }
+        placeholder="Describe what happens now..."
+      />
     );
   }
 
-  function back() {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  }
-
   return (
-    <KeyboardAvoidingView
-      style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.content}
-      >
-        <Text style={styles.title}>🌅 Rewrite the Scene</Text>
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.kicker}>Healing Studio</Text>
+        <Text style={styles.title}>Rewrite the Scene</Text>
 
-        <Text style={styles.progress}>
-          Step {step} of {totalSteps}
-        </Text>
-
-        {step === 1 && (
-          <View style={styles.card}>
-            <Text style={styles.heading}>Prepare</Text>
-            <Text style={styles.body}>Before we begin, remember you are in control.</Text>
-            <Text style={styles.body}>You may stop at any time.</Text>
-            <Text style={styles.body}>This exercise is about healing, not reliving pain.</Text>
-            <Text style={styles.quote}>You are safe right now.</Text>
-          </View>
+        {screen === 'welcome' && (
+          <RewriteWelcome
+            onBegin={() => setScreen('safety')}
+            onExit={() => router.back()}
+          />
         )}
 
-        {step === 2 && (
-          <View style={styles.card}>
-            <Text style={styles.heading}>Ground Yourself</Text>
-            <Text style={styles.body}>Take one slow breath.</Text>
-            <Text style={styles.body}>Notice five things you can see.</Text>
-            <Text style={styles.body}>Notice four things you can feel.</Text>
-            <Text style={styles.body}>Remind yourself:</Text>
-            <Text style={styles.quote}>I am safe.</Text>
-          </View>
+        {screen === 'safety' && (
+          <SafetyCheck
+            selectedLevel={safetyLevel}
+            onSelectLevel={setSafetyLevel}
+            onContinue={() => setScreen('session')}
+            onGrounding={() => setScreen('grounding')}
+          />
         )}
 
-        {step === 3 && (
-          <View style={styles.card}>
-            <Text style={styles.heading}>Meet Younger You</Text>
-
-            <TextInput style={styles.input} placeholder="How old were you?" value={age} onChangeText={setAge} />
-            <TextInput style={styles.input} placeholder="What happened?" multiline value={memory} onChangeText={setMemory} />
-            <TextInput style={styles.input} placeholder="What emotion stands out?" value={emotion} onChangeText={setEmotion} />
-            <TextInput style={styles.input} placeholder="What did you believe about yourself?" multiline value={belief} onChangeText={setBelief} />
-          </View>
+        {screen === 'grounding' && (
+          <GroundingExercise
+            onContinue={() => setScreen('session')}
+            onExit={() => router.back()}
+          />
         )}
 
-        {step === 4 && (
-          <View style={styles.card}>
-            <Text style={styles.heading}>What Did You Need?</Text>
-            <TextInput style={styles.input} placeholder="What did younger you need?" multiline value={needed} onChangeText={setNeeded} />
-          </View>
-        )}
+        {screen === 'session' && (
+          <>
+            <View style={styles.progressBackground}>
+              <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${((step + 1) / totalSteps) * 100}%`,
+                  },
+                ]}
+              />
+            </View>
 
-        {step === 5 && (
-          <View style={styles.card}>
-            <Text style={styles.heading}>Rewrite the Scene</Text>
-
-            <TextInput style={styles.input} placeholder="Who enters the memory?" value={protector} onChangeText={setProtector} />
-            <TextInput style={styles.input} placeholder="What do they say?" multiline value={words} onChangeText={setWords} />
-            <TextInput style={styles.input} placeholder="What changes?" multiline value={changes} onChangeText={setChanges} />
-          </View>
-        )}
-
-        <View style={styles.buttons}>
-          {step > 1 && (
-            <TouchableOpacity style={styles.backButton} onPress={back}>
-              <Text style={styles.backText}>Back</Text>
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity style={styles.nextButton} onPress={next}>
-            <Text style={styles.nextText}>
-              {step === totalSteps ? 'Finish' : 'Continue'}
+            <Text style={styles.stepText}>
+              Step {step + 1} of {totalSteps}
             </Text>
-          </TouchableOpacity>
-        </View>
+
+            {renderSessionStep()}
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={previousStep}
+              >
+                <Text style={styles.secondaryText}>Back</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={nextStep}
+              >
+                <Text style={styles.primaryText}>
+                  {step === totalSteps - 1 ? 'Complete' : 'Continue'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.exitButton}
+              onPress={() => router.back()}
+            >
+              <Text style={styles.exitText}>Pause & Exit</Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {screen === 'complete' && (
+          <CompletionScreen
+            primaryEmotion={primaryEmotion()}
+            primaryNeed={primaryNeed()}
+            supportPerson={responses.supportPerson || 'Not selected'}
+            reflection={buildReflection()}
+            onPray={() => {}}
+            onJournal={() => {}}
+            onSave={saveHealingSession}
+            onHome={() => router.push('/')}
+          />
+        )}
       </ScrollView>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFF9F3' },
-  content: { padding: 24, paddingTop: 60, paddingBottom: 120 },
-  title: { fontSize: 30, fontWeight: '900', color: '#4B1D7A', textAlign: 'center', marginBottom: 10 },
-  progress: { textAlign: 'center', color: '#E75480', fontSize: 18, fontWeight: '700', marginBottom: 24 },
-  card: { backgroundColor: '#FFFFFF', borderRadius: 24, padding: 22, borderWidth: 2, borderColor: '#D4AF37', marginBottom: 24 },
-  heading: { fontSize: 22, fontWeight: '900', color: '#4B1D7A', marginBottom: 16 },
-  body: { fontSize: 17, color: '#555', lineHeight: 28, marginBottom: 10 },
-  quote: { fontSize: 20, color: '#E75480', fontWeight: '800', textAlign: 'center', marginTop: 12 },
-  input: { backgroundColor: '#FFF', borderRadius: 16, borderWidth: 1, borderColor: '#DDD', padding: 16, marginBottom: 16, minHeight: 60, textAlignVertical: 'top', fontSize: 16 },
-  buttons: { flexDirection: 'row', justifyContent: 'space-between' },
-  backButton: { flex: 1, borderWidth: 2, borderColor: '#4B1D7A', borderRadius: 30, padding: 16, alignItems: 'center', marginRight: 10 },
-  backText: { color: '#4B1D7A', fontWeight: '800', fontSize: 16 },
-  nextButton: { flex: 1, backgroundColor: '#E75480', borderRadius: 30, padding: 16, alignItems: 'center' },
-  nextText: { color: '#FFF', fontWeight: '900', fontSize: 17 },
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFF8F2',
+  },
+  content: {
+    padding: 24,
+    paddingBottom: 50,
+  },
+  kicker: {
+    color: '#D4AF37',
+    fontWeight: '900',
+    fontSize: 13,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  title: {
+    color: '#4B1D7A',
+    fontSize: 32,
+    fontWeight: '900',
+    marginBottom: 18,
+  },
+  progressBackground: {
+    height: 10,
+    backgroundColor: '#E9E2EC',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#E75480',
+  },
+  stepText: {
+    color: '#8B7A90',
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+  },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: '#E9E2EC',
+    paddingVertical: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+  },
+  primaryButton: {
+    flex: 1,
+    backgroundColor: '#E75480',
+    paddingVertical: 16,
+    borderRadius: 18,
+    alignItems: 'center',
+  },
+  secondaryText: {
+    color: '#4B1D7A',
+    fontWeight: '900',
+    fontSize: 16,
+  },
+  primaryText: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 16,
+  },
+  exitButton: {
+    alignItems: 'center',
+    paddingVertical: 18,
+  },
+  exitText: {
+    color: '#8B7A90',
+    fontWeight: '800',
+    fontSize: 15,
+  },
 });

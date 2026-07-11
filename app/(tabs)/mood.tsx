@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 
 import { addGrowth } from '../../lib/garden';
+import { loadData, saveData } from '../../lib/storage';
 
 const moodSections = [
   {
@@ -72,12 +72,8 @@ export default function MoodScreen() {
   }, []);
 
   async function loadSavedMood() {
-    try {
-      const savedMood = await AsyncStorage.getItem(MOOD_STORAGE_KEY);
-      if (savedMood) setSelectedMood(savedMood);
-    } catch {
-      Alert.alert('Unable to load mood', 'Please try again.');
-    }
+    const savedMood = await loadData<string>(MOOD_STORAGE_KEY);
+    if (savedMood) setSelectedMood(savedMood);
   }
 
   async function saveMood() {
@@ -86,17 +82,13 @@ export default function MoodScreen() {
       return;
     }
 
-    try {
-      await AsyncStorage.setItem(MOOD_STORAGE_KEY, selectedMood);
-      await addGrowth(5);
+    await saveData(MOOD_STORAGE_KEY, selectedMood);
+    await addGrowth(5);
 
-      router.push({
-        pathname: '/(tabs)/mood-response',
-        params: { mood: selectedMood },
-      } as any);
-    } catch {
-      Alert.alert('Unable to save mood', 'Please try again.');
-    }
+    router.push({
+      pathname: '/(tabs)/mood-response',
+      params: { mood: selectedMood },
+    } as any);
   }
 
   return (

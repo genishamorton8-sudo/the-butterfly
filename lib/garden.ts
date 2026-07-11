@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadData, removeData, saveData } from './storage';
 
 const GARDEN_KEY = '@butterfly_garden';
 
@@ -7,21 +7,12 @@ export interface GardenData {
 }
 
 export async function getGarden(): Promise<GardenData> {
-  try {
-    const data = await AsyncStorage.getItem(GARDEN_KEY);
-
-    if (data) {
-      return JSON.parse(data);
-    }
-
-    return { growth: 0 };
-  } catch {
-    return { growth: 0 };
-  }
+  const data = await loadData<GardenData>(GARDEN_KEY);
+  return data ?? { growth: 0 };
 }
 
 export async function saveGarden(garden: GardenData) {
-  await AsyncStorage.setItem(GARDEN_KEY, JSON.stringify(garden));
+  await saveData(GARDEN_KEY, garden);
 }
 
 export async function addGrowth(points: number) {
@@ -32,7 +23,7 @@ export async function addGrowth(points: number) {
 }
 
 export async function resetGarden() {
-  await AsyncStorage.removeItem(GARDEN_KEY);
+  await removeData(GARDEN_KEY);
 }
 
 export function getGardenStage(growth: number) {

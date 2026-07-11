@@ -7,10 +7,6 @@ import {
   View,
 } from 'react-native';
 
-import HealingDashboard from '../../components/butterfly/HealingDashboard';
-import HomeHero from '../../components/home/HomeHero';
-import { getDailyButterflyReflection } from '../../lib/butterflyReflection';
-
 function getGreeting() {
   const hour = new Date().getHours();
 
@@ -22,52 +18,41 @@ function getGreeting() {
 export default function AdminHomeScreen() {
   const greeting = getGreeting();
 
-  const reflection = getDailyButterflyReflection('Admin');
-
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.content}
     >
-      <HomeHero
-        greeting={greeting}
-        reflection={reflection}
-      />
-
-      <HealingDashboard />
+      <Text style={styles.greeting}>{greeting}, Admin</Text>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
           Admin Dashboard
         </Text>
 
-        <Link href="/ai-companion" asChild>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>
-              Continue Conversation
-            </Text>
-          </TouchableOpacity>
-        </Link>
-
         <View style={styles.grid}>
-          <HomeCard
-            title="Healing Journey"
-            text="See your growth."
+          <AdminCard
+            title="Members"
+            text="View and manage member accounts."
+            href="/admin/members"
           />
 
-          <HomeCard
-            title="Prayer Room"
-            text="Pause and pray."
+          <AdminCard
+            title="Beta Control Center"
+            text="Manage the 90-day beta program."
+            href="/admin/beta-control"
           />
 
-          <HomeCard
-            title="Scripture Vault"
-            text="Hold onto truth."
+          <AdminCard
+            title="Founding Butterflies"
+            text="Review founding member applications."
+            href="/admin/founding-butterflies"
           />
 
-          <HomeCard
-            title="Healing Garden"
-            text="Grow with care."
+          <AdminCard
+            title="Bug Reports"
+            text="See reports submitted by users."
+            href="/admin/bug-reports"
           />
         </View>
       </View>
@@ -75,20 +60,24 @@ export default function AdminHomeScreen() {
   );
 }
 
-type HomeCardProps = {
+type AdminCardProps = {
   title: string;
   text: string;
+  href: string;
 };
 
-function HomeCard({
+function AdminCard({
   title,
   text,
-}: HomeCardProps) {
+  href,
+}: AdminCardProps) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardText}>{text}</Text>
-    </View>
+    <Link href={href as any} asChild>
+      <TouchableOpacity style={styles.card}>
+        <Text style={styles.cardTitle}>{title}</Text>
+        <Text style={styles.cardText}>{text}</Text>
+      </TouchableOpacity>
+    </Link>
   );
 }
 
@@ -116,18 +105,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 
-  primaryButton: {
-    backgroundColor: '#E75480',
-    borderRadius: 18,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  greeting: {
+    color: '#4B1D7A',
+    fontSize: 26,
     fontWeight: '900',
+    marginBottom: 16,
   },
 
   grid: {

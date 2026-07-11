@@ -70,7 +70,7 @@ export default function DashboardScreen() {
 
       <TouchableOpacity
         style={styles.secondaryButton}
-        onPress={() => router.push('/(tabs)/healing-journal' as any)}
+        onPress={() => router.push('/(tabs)/healing-journal?tab=healing' as any)}
       >
         <Text style={styles.secondaryButtonText}>Open My Healing Journal</Text>
       </TouchableOpacity>

@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -13,6 +12,7 @@ import {
 } from 'react-native';
 
 import { getGarden, getGardenStage } from '../../lib/garden';
+import { loadData, saveData } from '../../lib/storage';
 
 const TRANSFORMATION_KEY = '@butterfly_transformation_photos';
 
@@ -33,14 +33,13 @@ export default function UploadSelfieScreen() {
   }, []);
 
   async function loadPhotos() {
-    const savedPhotos = await AsyncStorage.getItem(TRANSFORMATION_KEY);
+    const savedPhotos = await loadData<TransformationPhoto[]>(TRANSFORMATION_KEY);
 
     if (savedPhotos) {
-      const parsedPhotos = JSON.parse(savedPhotos);
-      setPhotos(parsedPhotos);
+      setPhotos(savedPhotos);
 
-      if (parsedPhotos.length > 0) {
-        setCurrentPhoto(parsedPhotos[0].uri);
+      if (savedPhotos.length > 0) {
+        setCurrentPhoto(savedPhotos[0].uri);
       }
     }
   }
@@ -59,10 +58,7 @@ export default function UploadSelfieScreen() {
 
     const updatedPhotos = [newPhoto, ...photos];
 
-    await AsyncStorage.setItem(
-      TRANSFORMATION_KEY,
-      JSON.stringify(updatedPhotos)
-    );
+    await saveData(TRANSFORMATION_KEY, updatedPhotos);
 
     setPhotos(updatedPhotos);
     setCurrentPhoto(uri);
