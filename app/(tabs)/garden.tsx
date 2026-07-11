@@ -40,9 +40,8 @@ export default function GardenScreen() {
   );
 
   const stage = getGardenStage(growth);
-
   const milestones = [10, 25, 50, 100, 200, 350, 500];
-  const nextMilestone = milestones.find((milestone) => milestone > growth) ?? null;
+const nextMilestone = milestones.find((milestone) => milestone > growth) ?? null;
   const pointsToNext = nextMilestone ? nextMilestone - growth : 0;
 
   return (
