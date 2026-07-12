@@ -1,6 +1,7 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +15,7 @@ import {
   resetGarden,
 } from '../../lib/garden';
 import { getJournal } from '../../lib/journal';
-import { getProgress } from '../../lib/progress';
+import { getProgress, resetProgress } from '../../lib/progress';
 
 export default function GardenScreen() {
   const [growth, setGrowth] = useState(0);
@@ -108,9 +109,23 @@ export default function GardenScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={async () => {
-          await resetGarden();
-          loadGarden();
+        onPress={() => {
+          Alert.alert(
+            'Reset Garden?',
+            'This will reset your Garden Growth, Butterfly Steps, and Healing Streak back to zero. Your journal entries will not be affected.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Reset',
+                style: 'destructive',
+                onPress: async () => {
+                  await resetGarden();
+                  await resetProgress();
+                  loadGarden();
+                },
+              },
+            ]
+          );
         }}
       >
         <Text style={styles.buttonText}>Reset Garden</Text>
