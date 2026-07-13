@@ -18,23 +18,41 @@ import { addGrowth, getGarden } from '../../lib/garden';
 const WORD_TIERS: { stage: string; words: string[] }[] = [
   {
     stage: '🌰 Seed of Hope',
-    words: ['PEACE', 'REST', 'HOPE', 'CALM', 'SAFE', 'LIGHT', 'STILL', 'KIND'],
+    words: [
+      'PEACE', 'REST', 'HOPE', 'CALM', 'SAFE', 'LIGHT', 'STILL', 'KIND',
+      'BREATHE', 'SOFT', 'QUIET', 'GENTLE', 'SEEN', 'HELD', 'HERE',
+    ],
   },
   {
     stage: '🌱 New Growth',
-    words: ['GRACE', 'TRUST', 'FAITH', 'GENTLE', 'BRAVE', 'WORTHY', 'GROWTH', 'RISING'],
+    words: [
+      'GRACE', 'TRUST', 'FAITH', 'GENTLE', 'BRAVE', 'WORTHY', 'GROWTH', 'RISING',
+      'STEADY', 'HONEST', 'PRESENT', 'BELIEVE', 'ANCHOR', 'ROOTED', 'PATIENT',
+    ],
   },
   {
     stage: '🌸 Blooming',
-    words: ['HEALED', 'FORGIVEN', 'COURAGE', 'FREEDOM', 'RENEWED', 'STRONGER'],
+    words: [
+      'HEALED', 'FORGIVEN', 'COURAGE', 'FREEDOM', 'RENEWED', 'STRONGER',
+      'BLOSSOM', 'RADIANT', 'AWAKENED', 'UNSHAKEN', 'GRATEFUL', 'GROUNDED',
+      'TENDER', 'HONEST',
+    ],
   },
   {
     stage: '🦋 Transforming',
-    words: ['RESTORED', 'STRENGTH', 'CONFIDENT', 'EMPOWERED', 'PURPOSE'],
+    words: [
+      'RESTORED', 'STRENGTH', 'CONFIDENT', 'EMPOWERED', 'PURPOSE',
+      'RESILIENT', 'FEARLESS', 'AWAKENED', 'UNSHAKEN', 'REBUILT',
+      'RECLAIMED', 'FLOURISH', 'STEADFAST',
+    ],
   },
   {
     stage: '👑 Flourishing',
-    words: ['OVERCOMER', 'RESILIENT', 'VICTORIOUS', 'WHOLEHEARTED', 'TRANSFORMED', 'BELOVED'],
+    words: [
+      'OVERCOMER', 'RESILIENT', 'VICTORIOUS', 'WHOLEHEARTED', 'TRANSFORMED',
+      'BELOVED', 'UNSTOPPABLE', 'RADIANT', 'LIMITLESS', 'TRIUMPHANT',
+      'MAGNIFICENT', 'ANOINTED', 'UNBREAKABLE',
+    ],
   },
 ];
 
