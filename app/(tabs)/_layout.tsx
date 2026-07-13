@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import { auth } from '../../lib/firebase';
+import { AccessLevel, resolveAccess } from '../../lib/access';
 import { hydrateSessionMemory } from '../../lib/butterflySessionMemory';
 import { hydrateHealingMilestones } from '../../lib/healingMilestones';
 
 export default function TabLayout() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
+  const [access, setAccess] = useState<AccessLevel | undefined>(undefined);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -23,10 +25,12 @@ export default function TabLayout() {
     if (user) {
       hydrateSessionMemory();
       hydrateHealingMilestones();
+      setAccess(undefined);
+      resolveAccess().then(setAccess);
     }
   }, [user]);
 
-  if (user === undefined) {
+  if (user === undefined || (user && access === undefined)) {
     return (
       <View
         style={{
@@ -43,6 +47,10 @@ export default function TabLayout() {
 
   if (!user) {
     return <Redirect href="/login" />;
+  }
+
+  if (access === 'pending') {
+    return <Redirect href={'/beta-pending' as any} />;
   }
 
   return (
@@ -141,7 +149,6 @@ export default function TabLayout() {
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="skin-tone" options={{ href: null }} />
       <Tabs.Screen name="bug-report" options={{ href: null }} />
-      <Tabs.Screen name="application" options={{ href: null }} />
       <Tabs.Screen name="beta-center" options={{ href: null }} />
       <Tabs.Screen name="announcements" options={{ href: null }} />
       <Tabs.Screen name="feature-request" options={{ href: null }} />

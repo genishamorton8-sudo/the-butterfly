@@ -87,7 +87,7 @@ export default function JournalScreen() {
       style={styles.wrapper}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Platform.OS === 'web' ? undefined : Keyboard.dismiss}>
         <ScrollView
           style={styles.screen}
           contentContainerStyle={styles.content}

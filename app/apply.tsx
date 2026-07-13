@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
     Alert,
     ScrollView,
     StyleSheet,
@@ -12,7 +13,8 @@ import {
     View,
 } from 'react-native';
 
-import { auth, db } from '../../lib/firebase';
+import { auth, db } from '../lib/firebase';
+import { getBetaWindow, getBetaWindowStatus } from '../lib/betaWindow';
 
 export default function FoundingButterflyApplication() {
   const [fullName, setFullName] = useState('');
@@ -35,6 +37,14 @@ export default function FoundingButterflyApplication() {
   const [privacyAgree, setPrivacyAgree] = useState(false);
   const [wellnessAgree, setWellnessAgree] = useState(false);
   const [truthAgree, setTruthAgree] = useState(false);
+
+  const [applicationsOpen, setApplicationsOpen] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    getBetaWindow()
+      .then((window) => setApplicationsOpen(getBetaWindowStatus(window.startedAt).isOpenForApplications))
+      .catch(() => setApplicationsOpen(true));
+  }, []);
 
   async function submitApplication() {
     if (!fullName || !email || !dateOfBirth || !cityState || !whyJoin || !signature) {
@@ -85,12 +95,40 @@ export default function FoundingButterflyApplication() {
         'Your Founding Butterfly application has been received and is pending review.'
       );
 
-      router.replace('/(tabs)/dashboard' as any);
+      router.replace('/beta-pending' as any);
     } catch {
       Alert.alert('Could not submit', 'Please try again.');
     } finally {
       setSaving(false);
     }
+  }
+
+  if (applicationsOpen === undefined) {
+    return (
+      <View style={styles.loadingScreen}>
+        <ActivityIndicator size="large" color="#E75480" />
+      </View>
+    );
+  }
+
+  if (!applicationsOpen) {
+    return (
+      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+        <Text style={styles.icon}>🦋</Text>
+        <Text style={styles.title}>Applications Are Closed</Text>
+        <Text style={styles.subtitle}>
+          The Founding Butterfly beta window has ended, so we are no longer
+          accepting new applications.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.replace('/beta-pending' as any)}
+        >
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
   }
 
   return (
@@ -265,9 +303,9 @@ export default function FoundingButterflyApplication() {
 
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => router.replace('/(tabs)/dashboard' as any)}
+        onPress={() => router.replace('/beta-pending' as any)}
       >
-        <Text style={styles.backButtonText}>Back to Dashboard</Text>
+        <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -338,6 +376,12 @@ function Input({
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: '#FFF9F3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   screen: {
     flex: 1,
     backgroundColor: '#FFF9F3',

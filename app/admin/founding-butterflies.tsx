@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 
 import { db } from '../../lib/firebase';
+import { statusEmoji, statusLabel } from '../../lib/betaStatus';
 
 type BetaApplication = {
   id: string;
@@ -46,22 +47,6 @@ type BetaApplication = {
   status: string;
   badgeRequested: string;
 };
-
-function statusLabel(status: string) {
-  if (status === 'approved') return 'Approved';
-  if (status === 'rejected') return 'Rejected';
-  if (status === 'needs_more_info') return 'Needs More Info';
-  if (status === 'awaiting_parent_review') return 'Awaiting Parent Review';
-  return 'Pending Review';
-}
-
-function statusEmoji(status: string) {
-  if (status === 'approved') return '🟢';
-  if (status === 'rejected') return '🔴';
-  if (status === 'needs_more_info') return '🟡';
-  if (status === 'awaiting_parent_review') return '🟠';
-  return '🟡';
-}
 
 export default function FoundingButterfliesScreen() {
   const [applications, setApplications] = useState<BetaApplication[]>([]);

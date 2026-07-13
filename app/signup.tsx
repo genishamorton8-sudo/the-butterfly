@@ -66,7 +66,7 @@ export default function SignupScreen() {
       style={styles.wrapper}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Platform.OS === 'web' ? undefined : Keyboard.dismiss}>
         <ScrollView
           style={styles.screen}
           contentContainerStyle={styles.content}
@@ -84,6 +84,7 @@ export default function SignupScreen() {
             style={styles.input}
             placeholder="Name"
             placeholderTextColor="#9B8AA8"
+            autoComplete="off"
             value={name}
             onChangeText={setName}
           />
@@ -94,6 +95,7 @@ export default function SignupScreen() {
             placeholderTextColor="#9B8AA8"
             keyboardType="email-address"
             autoCapitalize="none"
+            autoComplete="off"
             value={email}
             onChangeText={setEmail}
           />
@@ -103,6 +105,7 @@ export default function SignupScreen() {
             placeholder="Password"
             placeholderTextColor="#9B8AA8"
             secureTextEntry
+            autoComplete="new-password"
             value={password}
             onChangeText={setPassword}
           />

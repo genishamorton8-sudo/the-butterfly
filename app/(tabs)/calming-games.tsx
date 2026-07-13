@@ -1,65 +1,29 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
-const exercises = [
+const games = [
   {
-    title: 'Rewrite the Scene',
-    description: 'Gently revisit a painful memory and rewrite it with safety, compassion, and hope.',
-    route: '/(tabs)/rewrite-scene',
-    icon: 'movie-edit',
+    title: 'Word Garden',
+    description: 'Unscramble gentle, calming words. Each one you solve grows a flower in your garden.',
+    route: '/(tabs)/word-garden',
+    icon: 'flower-tulip-outline',
   },
   {
-    title: 'Change the Thought',
-    description: 'Replace painful beliefs with healthier, truthful thoughts.',
-    route: '/(tabs)/change-the-thought',
-    icon: 'brain',
-  },
-  {
-    title: 'Meet Younger Me',
-    description: 'Comfort and reconnect with the younger version of yourself.',
-    route: '/(tabs)/meet-younger-me',
-    icon: 'human-child',
-  },
-  {
-    title: 'Safe Place',
-    description: 'Create a peaceful inner place you can return to anytime.',
-    route: '/(tabs)/safe-place',
-    icon: 'home-heart',
-  },
-  {
-    title: 'Mirror Truth',
-    description: 'Replace lies with truth and speak kindly over yourself.',
-    route: '/(tabs)/mirror-truth',
-    icon: 'mirror',
-  },
-  {
-    title: 'Letters Never Sent',
-    description: 'Write the words your heart has been carrying without pressure to send them.',
-    route: '/(tabs)/letters-never-sent',
-    icon: 'email-outline',
-  },
-  {
-    title: 'Future Self',
-    description: 'Meet the healed version of you and take one step toward her.',
-    route: '/(tabs)/future-self',
-    icon: 'star-four-points',
-  },
-  {
-    title: 'Calming Games',
-    description: 'Word Garden and Bloom Match - gentle games to help you slow down and center yourself.',
-    route: '/(tabs)/calming-games',
-    icon: 'flower-outline',
+    title: 'Bloom Match',
+    description: 'A slow, soothing memory match game with flowers and butterflies. No timer, no pressure.',
+    route: '/(tabs)/bloom-match',
+    icon: 'cards-outline',
   },
 ];
 
-export default function HealingExercisesScreen() {
+export default function CalmingGamesScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <MaterialCommunityIcons
@@ -69,29 +33,29 @@ export default function HealingExercisesScreen() {
         style={styles.topIcon}
       />
 
-      <Text style={styles.title}>Butterfly Healing Studio</Text>
+      <Text style={styles.title}>Calming Games</Text>
 
       <Text style={styles.subtitle}>
-        Choose the healing experience you need today.
+        A gentle place to slow down, breathe, and let your mind rest.
       </Text>
 
-      {exercises.map((exercise) => (
+      {games.map((game) => (
         <TouchableOpacity
-          key={exercise.title}
+          key={game.title}
           style={styles.card}
-          onPress={() => router.push(exercise.route as any)}
+          onPress={() => router.push(game.route as any)}
         >
           <View style={styles.iconCircle}>
             <MaterialCommunityIcons
-              name={exercise.icon as any}
+              name={game.icon as any}
               size={30}
               color="#E75480"
             />
           </View>
 
           <View style={styles.cardTextWrap}>
-            <Text style={styles.cardTitle}>{exercise.title}</Text>
-            <Text style={styles.cardText}>{exercise.description}</Text>
+            <Text style={styles.cardTitle}>{game.title}</Text>
+            <Text style={styles.cardText}>{game.description}</Text>
           </View>
 
           <MaterialCommunityIcons
@@ -104,9 +68,9 @@ export default function HealingExercisesScreen() {
 
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => router.replace('/(tabs)/dashboard' as any)}
+        onPress={() => router.push('/(tabs)/healing-exercises' as any)}
       >
-        <Text style={styles.backText}>Back to Dashboard</Text>
+        <Text style={styles.backText}>Back to Healing Studio</Text>
       </TouchableOpacity>
     </ScrollView>
   );

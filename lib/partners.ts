@@ -9,6 +9,13 @@ import { auth, db } from './firebase';
 
 export type UserRole = 'admin' | 'member';
 
+export type BetaStatus =
+  | 'pending_review'
+  | 'awaiting_parent_review'
+  | 'needs_more_info'
+  | 'approved'
+  | 'rejected';
+
 export type PartnerProfile = {
   uid: string;
   email: string;
@@ -17,6 +24,9 @@ export type PartnerProfile = {
   partnerUid: string | null;
   emojiSkinTone: string;
   role: UserRole;
+  betaStatus?: BetaStatus;
+  betaBadge?: string;
+  betaApprovedAt?: any;
   createdAt?: any;
 };
 

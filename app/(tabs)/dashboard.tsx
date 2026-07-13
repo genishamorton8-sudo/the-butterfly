@@ -53,8 +53,8 @@ export default function DashboardScreen() {
     const profile = await getMyPartnerProfile();
 
     setSkinToneEmoji(getSkinToneEmoji(profile?.emojiSkinTone));
-    setBetaBadge((profile as any)?.betaBadge || '');
-    setBetaStatus((profile as any)?.betaStatus || '');
+    setBetaBadge(profile?.betaBadge || '');
+    setBetaStatus(profile?.betaStatus || '');
 
     if (profile?.role === 'admin') {
       setIsAdmin(true);
@@ -234,9 +234,9 @@ export default function DashboardScreen() {
           onPress={() => router.push('/check-in' as any)}
         />
         <HomeButton
-          title="Application"
+          title="Founding Butterfly"
           emoji="🦋"
-          onPress={() => router.push('/(tabs)/application' as any)}
+          onPress={() => router.push('/beta-pending' as any)}
         />
         <HomeButton
           title="Beta Center"

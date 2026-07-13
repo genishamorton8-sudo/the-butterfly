@@ -3,6 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     ScrollView,
     StyleSheet,
     Text,
@@ -11,6 +12,12 @@ import {
 } from 'react-native';
 
 import { db } from '../../lib/firebase';
+import {
+    BetaWindowStatus,
+    getBetaWindow,
+    getBetaWindowStatus,
+    startBetaWindow,
+} from '../../lib/betaWindow';
 
 type BetaStats = {
   total: number;
@@ -31,10 +38,30 @@ export default function BetaControlCenter() {
     awaitingParent: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [windowStatus, setWindowStatus] = useState<BetaWindowStatus | null>(null);
+  const [startingWindow, setStartingWindow] = useState(false);
 
   useEffect(() => {
     loadStats();
+    loadWindow();
   }, []);
+
+  async function loadWindow() {
+    const window = await getBetaWindow();
+    setWindowStatus(getBetaWindowStatus(window.startedAt));
+  }
+
+  async function handleStartWindow() {
+    try {
+      setStartingWindow(true);
+      await startBetaWindow();
+      await loadWindow();
+    } catch {
+      Alert.alert('Could not start beta window', 'Please try again.');
+    } finally {
+      setStartingWindow(false);
+    }
+  }
 
   async function loadStats() {
     try {
@@ -95,6 +122,37 @@ export default function BetaControlCenter() {
         <StatCard label="Parent Review" value={stats.awaitingParent} emoji="🟠" />
         <StatCard label="Needs Info" value={stats.needsMoreInfo} emoji="📩" />
         <StatCard label="Rejected" value={stats.rejected} emoji="🔴" />
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>90-Day Beta Window</Text>
+
+        {!windowStatus?.started ? (
+          <>
+            <Text style={styles.bodyText}>
+              The beta window has not started yet. Applications stay open
+              until you start the 90-day clock.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={handleStartWindow}
+              disabled={startingWindow}
+            >
+              <Text style={styles.primaryButtonText}>
+                {startingWindow ? 'Starting...' : 'Start 90-Day Beta Window'}
+              </Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={styles.bodyText}>
+            Day {Math.min(windowStatus.daysElapsed, 90)} of 90.{' '}
+            {windowStatus.isOpenForApplications
+              ? `${windowStatus.daysRemaining} days left to accept new applications.`
+              : 'Closed to new applicants. Approved members and admins keep full access.'}
+            {'\n'}Ends {windowStatus.endsAt?.toLocaleDateString()}.
+          </Text>
+        )}
       </View>
 
       <View style={styles.card}>

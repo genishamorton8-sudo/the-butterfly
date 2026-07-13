@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function unchangedRoleFields() {
+      return request.resource.data.role == resource.data.role &&
+        request.resource.data.get('betaStatus', null) == resource.data.get('betaStatus', null) &&
+        request.resource.data.get('betaBadge', null) == resource.data.get('betaBadge', null) &&
+        request.resource.data.get('betaApprovedAt', null) == resource.data.get('betaApprovedAt', null);
+    }
+
+    function onlyChangedPartnerUid() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['partnerUid']);
+    }
+
+    // Profiles. Anyone can read/update their own doc, but only an admin can
+    // ever change role/betaStatus/betaBadge/betaApprovedAt — those are the
+    // fields that grant admin or beta access. A signed-in user can also
+    // update just `partnerUid` on someone else's doc (Butterfly Partner
+    // linking, matches lib/partners.ts + connect-partner.tsx behavior).
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      allow create: if isOwner(uid) &&
+        (request.resource.data.role == 'member' ||
+         (request.resource.data.role == 'admin' &&
+          request.auth.token.email.lower() == 'bleuolive19@gmail.com'));
+
+      allow update: if isAdmin()
+        || (isOwner(uid) && unchangedRoleFields())
+        || (isSignedIn() && onlyChangedPartnerUid());
+
+      allow delete: if isAdmin();
+    }
+
+    // Founding Butterfly / beta applications. Applicants can create and
+    // read their own; only admins can review (update) or list everyone's.
+    match /betaApplications/{applicationId} {
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // One-way feedback forms: anyone signed in can submit, only admins triage.
+    match /bugReports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /featureRequests/{requestId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 90-day beta window clock. Everyone signed in needs to read it to know
+    // whether applications are still open; only an admin can start it.
+    match /config/{document} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
