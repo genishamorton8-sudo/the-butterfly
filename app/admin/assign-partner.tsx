@@ -1,21 +1,21 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import {
-    collection,
-    doc,
-    getDocs,
-    orderBy,
-    query,
-    updateDoc,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import { db } from '../../lib/firebase';

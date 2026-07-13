@@ -4,9 +4,9 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { auth } from '../../lib/firebase';
 import { AccessLevel, resolveAccess } from '../../lib/access';
 import { hydrateSessionMemory } from '../../lib/butterflySessionMemory';
+import { auth } from '../../lib/firebase';
 import { hydrateHealingMilestones } from '../../lib/healingMilestones';
 
 export default function TabLayout() {
@@ -152,6 +152,10 @@ export default function TabLayout() {
       <Tabs.Screen name="beta-center" options={{ href: null }} />
       <Tabs.Screen name="announcements" options={{ href: null }} />
       <Tabs.Screen name="feature-request" options={{ href: null }} />
+      <Tabs.Screen name="today-word" options={{ href: null }} />
+      <Tabs.Screen name="calming-games" options={{ href: null }} />
+      <Tabs.Screen name="word-garden" options={{ href: null }} />
+      <Tabs.Screen name="bloom-match" options={{ href: null }} />
     </Tabs>
   );
 }
