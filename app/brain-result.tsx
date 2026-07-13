@@ -76,9 +76,9 @@ export default function BrainResultScreen() {
 
         <TouchableOpacity
           style={styles.secondaryButton}
-          onPress={() => router.back()}
+          onPress={() => router.push('/(tabs)/dashboard' as any)}
         >
-          <Text style={styles.secondaryButtonText}>Back</Text>
+          <Text style={styles.secondaryButtonText}>Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
