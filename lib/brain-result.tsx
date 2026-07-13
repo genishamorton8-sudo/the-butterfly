@@ -1,11 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import type { HealingTheme } from '../lib/butterfly-brain';
