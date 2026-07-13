@@ -48,6 +48,13 @@ export default function CheckInScreen() {
         <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => router.push('/(tabs)/dashboard' as any)}
+        >
+          <Text style={styles.secondaryButtonText}>Back to Dashboard</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -90,6 +97,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 17,
+    fontWeight: '900',
+  },
+  secondaryButton: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  secondaryButtonText: {
+    color: '#4B1D7A',
+    fontSize: 16,
     fontWeight: '900',
   },
 });
