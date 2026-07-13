@@ -1,16 +1,26 @@
 import { router } from 'expo-router';
 import {
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+
+// TODO: once the Sankofa Facebook group is created, paste its URL here
+// (something like https://www.facebook.com/groups/123456789)
+const SANKOFA_FACEBOOK_GROUP_URL = '';
 
 export default function SankofaScreen() {
   function openSankofaLink() {
-    Linking.openURL('https://your-sankofa-link.com');
+    Linking.openURL('https://payhip.com/b/rUd6M');
+  }
+
+  function openFacebookGroup() {
+    if (SANKOFA_FACEBOOK_GROUP_URL) {
+      Linking.openURL(SANKOFA_FACEBOOK_GROUP_URL);
+    }
   }
 
   return (
@@ -51,6 +61,15 @@ export default function SankofaScreen() {
       <TouchableOpacity style={styles.primaryButton} onPress={openSankofaLink}>
         <Text style={styles.primaryButtonText}>Join Sankofa</Text>
       </TouchableOpacity>
+
+      {SANKOFA_FACEBOOK_GROUP_URL ? (
+        <TouchableOpacity
+          style={styles.facebookButton}
+          onPress={openFacebookGroup}
+        >
+          <Text style={styles.facebookButtonText}>Visit Our Facebook Group</Text>
+        </TouchableOpacity>
+      ) : null}
 
       <TouchableOpacity
         style={styles.secondaryButton}
@@ -149,6 +168,19 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
+    fontWeight: '900',
+  },
+  facebookButton: {
+    backgroundColor: '#4267B2',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  facebookButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '900',
   },
   secondaryButton: {
