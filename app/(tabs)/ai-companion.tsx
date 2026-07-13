@@ -32,24 +32,35 @@ export default function AICompanionScreen() {
   function detectEmotion(input: string) {
     const text = input.toLowerCase();
 
-    if (text.includes('anxious') || text.includes('anxiety')) return 'anxiety';
-    if (text.includes('sad')) return 'sadness';
-    if (text.includes('angry') || text.includes('mad')) return 'anger';
-    if (text.includes('hurt')) return 'hurt';
-    if (text.includes('afraid') || text.includes('fear')) return 'fear';
+    if (text.includes('anxious') || text.includes('anxiety') || text.includes('worried') || text.includes('overthinking') || text.includes('nervous')) return 'anxiety';
+    if (text.includes('sad') || text.includes('depress') || text.includes('down') || text.includes('cry')) return 'sadness';
+    if (text.includes('angry') || text.includes('mad') || text.includes('resent') || text.includes('frustrat')) return 'anger';
+    if (text.includes('hurt') || text.includes('pain') || text.includes('wound')) return 'hurt';
+    if (text.includes('afraid') || text.includes('fear') || text.includes('scared') || text.includes('terrified')) return 'fear';
+    if (text.includes('grief') || text.includes('loss') || text.includes('died') || text.includes('miss') || text.includes('passed away')) return 'grief';
+    if (text.includes('ashamed') || text.includes('shame') || text.includes('worthless') || text.includes('not enough') || text.includes('guilty')) return 'shame';
+    if (text.includes('alone') || text.includes('lonely') || text.includes('rejected') || text.includes('isolated')) return 'loneliness';
+    if (text.includes('purpose') || text.includes('calling') || text.includes('direction') || text.includes('lost') || text.includes('confused')) return 'purpose';
+    if (text.includes('forgive') || text.includes('betray')) return 'forgiveness';
+    if (text.includes('hope') || text.includes('grateful') || text.includes('thankful') || text.includes('blessed')) return 'hope';
+    if (text.includes('tired') || text.includes('exhausted') || text.includes('overwhelm') || text.includes('burnt out') || text.includes('burned out')) return 'weary';
 
     return null;
   }
+
+  const fallbackResponses = [
+    'Thank you for sharing that with me. What feels most present for you right now — a thought, a memory, or a feeling?',
+    'I hear you. Would it help to put this into words in your journal, or talk it through a bit more here?',
+    'I am still here with you. Is there a specific moment today that brought this up?',
+    'That matters, and so do you. What do you think your heart needs most right now?',
+    'Thank you for trusting me with this. Would prayer, journaling, or a healing exercise feel right for this?',
+  ];
 
   function buildResponse(input: string) {
     const emotion = detectEmotion(input);
 
     if (emotion) {
       setLastEmotion(emotion);
-    }
-
-    if (!emotion && lastEmotion) {
-      return `Earlier you shared something connected to ${lastEmotion}. I am still holding that with care. Tell me more about what is happening now.`;
     }
 
     if (emotion === 'anxiety') {
@@ -72,7 +83,36 @@ export default function AICompanionScreen() {
       return 'Fear often grows when we feel alone. I am here with you. Let’s take one small step together.';
     }
 
-    return 'Thank you for sharing that with me. Tell me a little more so I can better understand what you are experiencing.';
+    if (emotion === 'grief') {
+      return 'Grief can feel heavy because love was real. You do not have to rush your heart through this. Would writing about what you miss most feel right today?';
+    }
+
+    if (emotion === 'shame') {
+      return 'Shame tries to make your worst moment feel like your whole identity. It is not. Would Rewrite the Scene or Mirror Truth feel like a good next step?';
+    }
+
+    if (emotion === 'loneliness') {
+      return 'Feeling alone can make the heart feel invisible, but your presence and your story still matter. Is there a safe person you could reach out to today?';
+    }
+
+    if (emotion === 'purpose') {
+      return 'Searching for direction does not mean you are lost. Purpose often unfolds one step at a time. What is one thing you feel drawn toward right now?';
+    }
+
+    if (emotion === 'forgiveness') {
+      return 'Forgiveness is its own kind of healing, and it can take time. You do not have to have it all resolved today. What feels most true for you right now?';
+    }
+
+    if (emotion === 'hope') {
+      return 'I love hearing that. Gratitude and hope are proof that healing is already taking root in you. What has been helping you feel this way?';
+    }
+
+    if (emotion === 'weary') {
+      return 'It sounds like you are running on empty. Rest is not giving up, it is part of healing. What would feel most restful for you right now?';
+    }
+
+    const randomIndex = Math.floor(Math.random() * fallbackResponses.length);
+    return fallbackResponses[randomIndex];
   }
 
   async function sendMessage() {
