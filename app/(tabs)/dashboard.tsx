@@ -294,6 +294,11 @@ export default function DashboardScreen() {
           onPress={() => router.push('/(tabs)/testimonials' as any)}
         />
         <HomeButton
+          title="Sankofa Community"
+          emoji="💜"
+          onPress={() => router.push('/sankofa' as any)}
+        />
+        <HomeButton
           title="Butterfly Partners"
           emoji="🤝"
           onPress={() => router.push('/(tabs)/accountability' as any)}
